@@ -1,7 +1,7 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import db from "./lib/db";
 import authConfig from "./auth.config";
 import NextAuth from "next-auth";
+import { db } from "./lib/db";
 
 // Extract callbacks from authConfig
 const { callbacks: authConfigCallbacks, ...restAuthConfig } = authConfig;
