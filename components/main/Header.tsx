@@ -14,6 +14,7 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { HeaderNavigation } from "@/components/main/HeaderNavigation";
 import { UserAction } from "@/components/main/userAction";
 import { NavbarActions } from "@/components/main/NavbarActions";
+import { Logo } from "../logo";
 
 export const Header = () => {
   const isMediumDevice = useMediaQuery("(min-width: 768px)");
@@ -46,7 +47,7 @@ export const Header = () => {
       <div className="container mx-auto px-4 md:px-6 flex items-center h-full">
         {isMediumDevice ? (
           <>
-            {/* <Logo /> */}
+            <Logo />
             <HeaderNavigation isMobile={false} />
           </>
         ) : (
@@ -59,14 +60,13 @@ export const Header = () => {
                 side="left"
                 className="md:hidden h-full flex flex-col"
               >
-                {/* <Logo /> */}
+                <Logo />
                 <HeaderNavigation isMobile />
                 <SheetFooter>
                   <UserAction />
                 </SheetFooter>
               </SheetContent>
             </Sheet>
-            {/* <Logo /> */}
           </>
         )}
         <NavbarActions />

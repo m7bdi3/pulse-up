@@ -35,20 +35,133 @@ model Account {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String          @unique
   emailVerified DateTime?
   image         String?
   phone         String?
-  address1      String?
-  address2      String?
-  city          String?
-  zip           String?
-  state         String?
-  country       String?
+  address       String?
+  age           Int?
+  gender        String?
+  height        Float?
+  weight        Float?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   accounts      Account[]
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  role          UserRole        @default(USER)
+  workoutPlans  WorkoutPlan[]
+  progress      Progress[]
+  Session       Session[]
+  NutritionPlan NutritionPlan[]
+}
+
+model WorkoutPlan {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  goal        String?
+  difficulty  DifficultyLevel @default(BEGINNER)
+  duration    Int?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  userId      String
+  user        User            @relation(fields: [userId], references: [id])
+  exercises   Exercise[]
+  sessions    Session[]
+}
+
+enum ExerciseCategory {
+  STRENGTH
+  CARDIO
+  FLEXIBILITY
+  BALANCE
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model Progress {
+  id         String   @id @default(uuid())
+  date       DateTime @default(now())
+  weight     Float?
+  bodyFat    Float?
+  muscleMass Float?
+  notes      String?
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  id             String              @id @default(uuid())
+  date           DateTime            @default(now())
+  duration       Int
+  caloriesBurned Int?
+  feedback       String?
+  userId         String
+  user           User                @relation(fields: [userId], references: [id])
+  workoutPlanId  String?
+  workoutPlan    WorkoutPlan?        @relation(fields: [workoutPlanId], references: [id])
+  exercises      ExerciseOnSession[]
+}
+
+model Exercise {
+  id            String              @id @default(uuid())
+  name          String
+  description   String?
+  duration      Int?
+  repetitions   Int?
+  sets          Int?
+  equipment     String?
+  category      ExerciseCategory    @default(STRENGTH)
+  workoutPlanId String
+  workoutPlan   WorkoutPlan         @relation(fields: [workoutPlanId], references: [id])
+  sessions      ExerciseOnSession[]
+}
+
+model ExerciseOnSession {
+  sessionId  String
+  session    Session  @relation(fields: [sessionId], references: [id])
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@id([sessionId, exerciseId])
+}
+
+model NutritionPlan {
+  id             String  @id @default(uuid())
+  name           String
+  description    String?
+  caloriesPerDay Int?
+  protein        Float?
+  carbs          Float?
+  fats           Float?
+  userId         String
+  user           User    @relation(fields: [userId], references: [id])
+  meals          Meal[]
+}
+
+model Meal {
+  id              String        @id @default(uuid())
+  name            String
+  description     String?
+  calories        Int?
+  protein         Float?
+  carbs           Float?
+  fats            Float?
+  mealType        MealType      @default(OTHER)
+  timeOfDay       DateTime
+  nutritionPlanId String
+  nutritionPlan   NutritionPlan @relation(fields: [nutritionPlanId], references: [id])
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+  OTHER
 }
