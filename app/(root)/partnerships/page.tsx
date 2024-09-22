@@ -27,7 +27,7 @@ export default function percentage() {
           </p>
           <Link
             href="#"
-            className="inline-flex h-10 items-center justify-center rounded-md bg-primary-foreground px-8 text-sm font-medium text-primary shadow transition-colors hover:bg-neutral-600 hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-primary-foreground px-8 text-sm font-medium text-primary shadow transition-colors hover:bg-neutral-600 hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-1  disabled:pointer-events-none disabled:opacity-50"
             prefetch={false}
           >
             Join the Program

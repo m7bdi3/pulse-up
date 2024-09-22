@@ -8,15 +8,15 @@ export default auth(async function middleware(req) {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-  const isSettingsRoute = nextUrl.pathname.startsWith("/settings");
-
+  const isSettingsRoute = nextUrl.pathname.startsWith("/account");
+  const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard");
   if (isAdminRoute) {
     if (!isLoggedIn || req.auth?.user?.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/", nextUrl));
     }
   }
 
-  if (isSettingsRoute && !isLoggedIn) {
+  if ((isSettingsRoute && !isLoggedIn) || (isDashboardRoute && !isLoggedIn)) {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }
 

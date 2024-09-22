@@ -1,84 +1,114 @@
 "use server";
-
+import { cache } from "react";
 import { auth } from "@/auth";
-import {db} from "@/lib/db";
+import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
-import { Decimal } from "@prisma/client/runtime/library";
-import Stripe from "stripe";
 
-interface Props {
-  items: CartItem[];
-}
+import { absoluteUrl } from "@/lib/utils";
 
-export const createStripeUrl = async ({ items }: Props) => {
+const returnUrl = absoluteUrl("/dashboard");
+const DAY_IN_MS = 86_400_000;
+
+const getUserSub = cache(async (planId: string) => {
+  const session = await auth();
+  if (!session?.user.id) return null;
+
+  const data = await db.subscription.findUnique({
+    where: {
+      userId_planId: {
+        userId: session.user.id,
+        planId,
+      },
+    },
+  });
+
+  if (!data) return null;
+
+  const isActive =
+    data.stripePriceId &&
+    data.stripeCurrentPeriodEnd?.getTime()! + DAY_IN_MS > Date.now();
+
+  return {
+    ...data,
+    isActive: !!isActive,
+  };
+});
+
+export const createStripeUrl = async (planId: string) => {
   const session = await auth();
 
   if (!session?.user.id || !session) {
     throw new Error("Unauthorized");
   }
 
-  const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  const userSub = await getUserSub(planId);
 
-  items.forEach((item) => {
-    line_items.push({
-      quantity: item.quantity,
-      tax_rates: ["txr_1PpwO7CYUxjzdX9cgXZEKhA0"],
-      price_data: {
-        currency: "USD",
-        product_data: {
-          name: item.name,
-          images: item.productImages.map((image) => image.imageUrl),
-          description: `Color: ${item.selectedVariant.colorValue}, Size: ${item.selectedVariant.sizeValue}`,
+  if (userSub && userSub.stripeCustomerId) {
+    const stripeSession = await stripe.billingPortal.sessions.create({
+      customer: userSub.stripeCustomerId,
+      return_url: returnUrl,
+    });
+
+    return { data: stripeSession.url };
+  }
+
+  const subPlans = await db.subscriptionPlan.findMany();
+
+  const filteredPlan = subPlans.find((p) => p.id === planId);
+
+  if (filteredPlan?.duration === 0) {
+    const stripeSession = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: filteredPlan?.name!,
+              description: filteredPlan?.description!,
+            },
+            unit_amount: filteredPlan?.price! * 100,
+          },
         },
-        unit_amount: Math.round(Number(item.price) * 100),
+      ],
+      success_url: returnUrl,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL as string}`,
+      metadata: {
+        userId: session.user.id,
+        planId,
       },
     });
-  });
-
-  const totalPrice = items.reduce(
-    (acc, item) => acc + Number(item.price) * item.quantity,
-    0
-  );
-
-  const order = await db.order.create({
-    data: {
-      isPaid: false,
-      totalPrice: new Decimal(totalPrice.toPrecision(4)),
-      orderItems: {
-        create: items.map((item) => ({
-          productId: item.id,
-          colorId: item.selectedVariant.colorId || "",
-          sizeId: item.selectedVariant.sizeId || "",
-          quantity: item.quantity,
-          price: item.price,
-        })),
+    return { data: stripeSession.url };
+  } else {
+    const interval = filteredPlan?.duration === 30 ? "month" : "year";
+    const stripeSession = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: filteredPlan?.name!,
+              description: filteredPlan?.description!,
+            },
+            unit_amount: filteredPlan?.price! * 100,
+            recurring: {
+              interval,
+            },
+          },
+        },
+      ],
+      success_url: returnUrl,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL as string}`,
+      metadata: {
+        userId: session.user.id,
+        planId,
       },
-      userId: session?.user.id!,
-    },
-  });
-
-  const stripeSession = await stripe.checkout.sessions.create({
-    line_items,
-    mode: "payment",
-    billing_address_collection: "required",
-    phone_number_collection: {
-      enabled: true,
-    },
-    shipping_options: [
-      {
-        shipping_rate: "shr_1Ppw22CYUxjzdX9cwI1ifuZG",
-      },
-    ],
-
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL as string}/cart?success=1`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL as string}/cart?canceled=1`,
-    metadata: {
-      orderId: order.id,
-      sizeId: items.map((item) => item.selectedVariant.sizeId).join(","),
-      colorId: items.map((item) => item.selectedVariant.colorId).join(","),
-      productId: items.map((item) => item.id).join(","),
-    },
-  });
-
-  return { data: stripeSession.url };
+    });
+    return { data: stripeSession.url };
+  }
 };

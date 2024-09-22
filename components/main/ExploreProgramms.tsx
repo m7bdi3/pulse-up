@@ -173,3 +173,5 @@ export const ExplorePrograms = () => {
     </section>
   );
 };
+
+export default ExplorePrograms;

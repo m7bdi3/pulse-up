@@ -3,10 +3,11 @@
 import React from "react";
 import { LoginModal } from "@/components/LoginModal";
 import { useModalStore } from "@/hooks/store/use-store-modal";
+import { RegisterUserDataModal } from "../RegisterDataModal";
 
 export const ModalProvider = () => {
   const [mounted, setIsMounted] = React.useState(false);
-  const { isLoginOpen } = useModalStore();
+  const { isLoginOpen, isDataRegisterOpen } = useModalStore();
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -16,5 +17,10 @@ export const ModalProvider = () => {
     return null;
   }
 
-  return <>{isLoginOpen && <LoginModal />}</>;
+  return (
+    <>
+      {isLoginOpen && <LoginModal />}
+      {isDataRegisterOpen && <RegisterUserDataModal />}
+    </>
+  );
 };

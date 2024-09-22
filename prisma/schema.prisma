@@ -35,40 +35,278 @@ model Account {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String          @unique
-  emailVerified DateTime?
-  image         String?
-  phone         String?
-  address       String?
-  age           Int?
-  gender        String?
-  height        Float?
-  weight        Float?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  accounts      Account[]
-  role          UserRole        @default(USER)
-  workoutPlans  WorkoutPlan[]
-  progress      Progress[]
-  Session       Session[]
-  NutritionPlan NutritionPlan[]
+  id                  String             @id @default(cuid())
+  name                String?
+  email               String             @unique
+  emailVerified       DateTime?
+  image               String?
+  phone               String?
+  address             String?
+  age                 Int?
+  gender              Gender             @default(Male)
+  height              Float?
+  goal                Goal?
+  weight              Float?
+  bmi                 Int?
+  bmr                 Int?
+  bodyFat             Int?
+  muscleMass          Int?
+  activityLevel       activityLevel?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  isSubscribed        Boolean            @default(false)
+  accounts            Account[]
+  role                UserRole           @default(USER)
+  progress            Progress[]
+  Subscription        Subscription[]
+  userNutritionPlanId String?            @unique
+  userWorkoutPlanId   String?            @unique
+  nutritionPlan       UserNutritionPlan?
+  workoutPlan         UserWorkoutPlan?
+  Post                Post[]
+  Comment             Comment[]
+  Like                Like[]
+  UserChallenge       UserChallenge[]
+  UserEvent           UserEvent[]
+}
+
+model Progress {
+  id              String   @id @default(uuid())
+  date            DateTime @default(now())
+  weight          Float?
+  bodyFat         Float?
+  muscleMass      Float?
+  bmi             Float?
+  bmr             Float?
+  chest_weight    Int?
+  back_weight     Int?
+  deadlift_weight Int?
+  squat_weight    Int?
+  shoulder_weight Int?
+  bicep_weight    Int?
+  tricep_weight   Int?
+  core_weight     Int?
+  glute_weight    Int?
+  calf_weight     Int?
+  traps_weight    Int?
+  notes           String?
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SubscriptionPlan {
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  price         Float
+  duration      Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  userId                 String             @unique
+  planId                 String
+  stripeCustomerId       String             @unique
+  stripeSubscriptionId   String             @unique
+  stripePriceId          String
+  stripeCurrentPeriodEnd DateTime
+  status                 SubscriptionStatus
+  autoRenew              Boolean            @default(true)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  user                   User               @relation(fields: [userId], references: [id])
+  plan                   SubscriptionPlan   @relation(fields: [planId], references: [id])
+
+  @@unique([userId, planId])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum Goal {
+  WEIGHT_LOSS
+  WEIGHT_GAIN
+  MUSCLE_GAIN
+  MAINTAIN_WEIGHT
+  INCREASE_STAMINA
+  INCREASE_FLEXIBILITY
+  IMPROVE_OVERALL_HEALTH
+  INCREASE_ENERGY_LEVEL
+}
+
+enum activityLevel {
+  SEDENTARY
+  LIGHTLY_ACTIVE
+  MODERATELY_ACTIVE
+  VERY_ACTIVE
+  EXTRA_ACTIVE
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  userId    String
+  content   String
+  images    String[]
+  likes     Like[]
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Challenge {
+  id           String          @id @default(uuid())
+  name         String
+  description  String
+  duration     Int
+  startDate    DateTime
+  expiryDate   DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  participants UserChallenge[]
+}
+
+model UserChallenge {
+  id          String    @id @default(uuid())
+  userId      String
+  challengeId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+}
+
+model Event {
+  id        String      @id @default(uuid())
+  name      String
+  date      DateTime
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  attendees UserEvent[]
+}
+
+model UserEvent {
+  id      String @id @default(uuid())
+  userId  String
+  eventId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
 }
 
 model WorkoutPlan {
-  id          String          @id @default(uuid())
-  name        String
-  description String?
-  goal        String?
-  difficulty  DifficultyLevel @default(BEGINNER)
-  duration    Int?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  userId      String
-  user        User            @relation(fields: [userId], references: [id])
-  exercises   Exercise[]
-  sessions    Session[]
+  id               String            @id @default(uuid())
+  name             String
+  description      String?
+  goal             Goal
+  difficulty       DifficultyLevel   @default(BEGINNER)
+  duration         Int?
+  image            String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  userWorkoutPlans UserWorkoutPlan[]
+}
+
+model UserWorkoutPlan {
+  id            String         @id @default(uuid())
+  userId        String         @unique
+  workoutPlanId String         @unique
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutPlan   WorkoutPlan    @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  sessions      UserSessions[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@unique([userId, workoutPlanId])
+}
+
+model UserSessions {
+  id             String              @id @default(uuid())
+  name           String
+  day            Int
+  week           Int                 @default(0)
+  type           SessionType
+  duration       Int
+  completed      Boolean             @default(false)
+  caloriesBurned Int?
+  feedback       String[]
+  workoutPlanId  String
+  workoutPlan    UserWorkoutPlan     @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  exercises      ExerciseOnSession[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+enum SessionType {
+  Upper_Body_Strength
+  Lower_Body_Strength
+  Full_Body
+  HIIT_Cardio
+  Bodyweight_Exercises
+  Stretching
+  Core_Strength
+  Cardio
+  Strength_Training
+}
+
+model Exercise {
+  id             String              @id @default(uuid())
+  name           String              @unique
+  description    String?
+  duration       Int
+  repetitions    Int?
+  bodyPart       BodyPart
+  caloriesBurned Int
+  sets           Int?
+  images         String[]
+  equipment      ExerciseEquipment[]
+  category       ExerciseCategory
+  sessions       ExerciseOnSession[]
+}
+
+model ExerciseOnSession {
+  sessionId  String
+  session    UserSessions @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, exerciseId])
 }
 
 enum ExerciseCategory {
@@ -84,78 +322,149 @@ enum DifficultyLevel {
   ADVANCED
 }
 
-model Progress {
-  id         String   @id @default(uuid())
-  date       DateTime @default(now())
-  weight     Float?
-  bodyFat    Float?
-  muscleMass Float?
-  notes      String?
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
+enum BodyPart {
+  CHEST
+  BACK
+  SHOULDERS
+  ARMS
+  LEGS
+  GLUTES
+  ABS
+  CALVES
+  FOREARMS
+  CORE
 }
 
-model Session {
-  id             String              @id @default(uuid())
-  date           DateTime            @default(now())
-  duration       Int
-  caloriesBurned Int?
-  feedback       String?
-  userId         String
-  user           User                @relation(fields: [userId], references: [id])
-  workoutPlanId  String?
-  workoutPlan    WorkoutPlan?        @relation(fields: [workoutPlanId], references: [id])
-  exercises      ExerciseOnSession[]
-}
+enum ExerciseEquipment {
+  // Free Weights
+  DUMBBELLS
+  BARBELL
+  KETTLEBELL
+  WEIGHT_PLATES
 
-model Exercise {
-  id            String              @id @default(uuid())
-  name          String
-  description   String?
-  duration      Int?
-  repetitions   Int?
-  sets          Int?
-  equipment     String?
-  category      ExerciseCategory    @default(STRENGTH)
-  workoutPlanId String
-  workoutPlan   WorkoutPlan         @relation(fields: [workoutPlanId], references: [id])
-  sessions      ExerciseOnSession[]
-}
+  // Bands and Balls
+  RESISTANCE_BAND
+  MEDICINE_BALL
+  EXERCISE_BALL
+  FOAM_ROLLER
 
-model ExerciseOnSession {
-  sessionId  String
-  session    Session  @relation(fields: [sessionId], references: [id])
-  exerciseId String
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  // Cardio Machines
+  TREADMILL
+  ELLIPTICAL
+  STATIONARY_BIKE
+  ROWING_MACHINE
 
-  @@id([sessionId, exerciseId])
+  // Strength Machines
+  CABLE_MACHINE
+  LEG_PRESS_MACHINE
+  SMITH_MACHINE
+  PEC_DECK_MACHINE
+  LEG_EXTENSION_MACHINE
+  LEG_CURL_MACHINE
+  LAT_PULLDOWN_MACHINE
+  CHEST_PRESS_MACHINE
+  SHOULDER_PRESS_MACHINE
+  LEG_ADDUCTOR_MACHINE
+  LEG_ABDUCTOR_MACHINE
+  SEATED_ROW_MACHINE
+
+  // Bodyweight and Stability Equipment
+  BENCH
+  PULLUP_BAR
+  DIP_BARS
+  SQUAT_RACK
+  TRX_SUSPENSION
+  YOGA_MAT
+  STEP_PLATFORM
+  BOSU_BALL
+  ANKLE_WEIGHTS
+
+  // Specialty Equipment
+  BATTLE_ROPE
+  PLYOMETRIC_BOX
+  SAND_BAG
+  SLAM_BALL
+  SLIDING_DISCS
+  PARALLETTES
+
+  // Machines for Specific Exercises
+  HIP_THRUST_MACHINE
+  ABDOMINAL_CRUNCH_MACHINE
+  HACK_SQUAT_MACHINE
+
+  // Miscellaneous
+  JUMP_ROPE
+  AB_WHEEL
+  NONE
 }
 
 model NutritionPlan {
-  id             String  @id @default(uuid())
-  name           String
-  description    String?
-  caloriesPerDay Int?
-  protein        Float?
-  carbs          Float?
-  fats           Float?
-  userId         String
-  user           User    @relation(fields: [userId], references: [id])
-  meals          Meal[]
+  id          String              @id @default(uuid())
+  name        String
+  description String?
+  image       String
+  subscribers UserNutritionPlan[]
+}
+
+model UserMealPlan {
+  id                  String             @id @default(uuid())
+  day                 Int
+  mealType            MealType
+  meal                Meal               @relation(fields: [mealId], references: [id])
+  mealId              String
+  isCompleted         Boolean            @default(false)
+  calories            Int
+  protein             Float
+  carbs               Float
+  fats                Float
+  UserNutritionPlan   UserNutritionPlan? @relation(fields: [userNutritionPlanId], references: [id], onDelete: Cascade)
+  userNutritionPlanId String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@unique([userNutritionPlanId, day, mealType])
+}
+
+model UserNutritionPlan {
+  id               String         @id @default(uuid())
+  userId           String         @unique
+  nutritionPlanId  String
+  subscriptionDate DateTime       @default(now())
+  caloriesPerDay   Int?
+  protein          Float?
+  carbs            Float?
+  fats             Float?
+  nutritionPlan    NutritionPlan  @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  UserMealPlan     UserMealPlan[]
+
+  @@unique([userId, nutritionPlanId])
 }
 
 model Meal {
-  id              String        @id @default(uuid())
-  name            String
-  description     String?
-  calories        Int?
-  protein         Float?
-  carbs           Float?
-  fats            Float?
-  mealType        MealType      @default(OTHER)
-  timeOfDay       DateTime
-  nutritionPlanId String
-  nutritionPlan   NutritionPlan @relation(fields: [nutritionPlanId], references: [id])
+  id           String         @id @default(uuid())
+  name         String         @unique
+  description  String?
+  calories     Int?
+  protein      Float?
+  carbs        Float?
+  fats         Float?
+  servingSize  Int            @default(0)
+  mealType     MealType
+  foods        Food[]         @relation("MealFood")
+  UserMealPlan UserMealPlan[]
+}
+
+model Food {
+  id       String       @id @default(uuid())
+  name     String       @unique
+  calories Int?
+  protein  Float?
+  carbs    Float?
+  fats     Float?
+  image    String
+  category FoodCategory
+  meals    Meal[]       @relation("MealFood")
 }
 
 enum MealType {
@@ -163,5 +472,13 @@ enum MealType {
   LUNCH
   DINNER
   SNACK
-  OTHER
+}
+
+enum FoodCategory {
+  PROTEIN
+  CARBS
+  VEGETABLES
+  FRUITS
+  DAIRY
+  FATS
 }

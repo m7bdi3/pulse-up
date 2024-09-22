@@ -5,18 +5,15 @@ import { UserRole } from "@prisma/client";
 export default {
   providers: [
     Google({
-      profile(profile) {
-        return {
-          id: profile.id,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          role: profile.role,
-          createdAt: profile.createdAt,
-          updatedAt: profile.updatedAt,
-        };
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
       },
-      allowDangerousEmailAccountLinking: true,
     }),
   ],
   callbacks: {

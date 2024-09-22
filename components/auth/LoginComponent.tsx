@@ -19,7 +19,7 @@ export function SignIn() {
         <Button
           variant="outline"
           className="justify-center gap-3"
-          onClick={() => signIn("google", { redirectTo: "/" })}
+          onClick={() => signIn("google", { redirectTo: "/dashboard" })}
         >
           <ChromeIcon className="h-6 w-6" />
           Sign in with Google

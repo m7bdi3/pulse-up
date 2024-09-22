@@ -3,7 +3,6 @@ import authConfig from "./auth.config";
 import NextAuth from "next-auth";
 import { db } from "./lib/db";
 
-// Extract callbacks from authConfig
 const { callbacks: authConfigCallbacks, ...restAuthConfig } = authConfig;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -16,7 +15,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/error",
   },
   events: {
-    async linkAccount({ user }) {
+    async signIn({ user }) {
       await db.user.update({
         where: { id: user.id },
         data: {
@@ -40,7 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       token.updatedAt = existingUser.updatedAt;
       return token;
     },
-    ...authConfigCallbacks, // Merge callbacks from authConfig
+    ...authConfigCallbacks,
   },
-  ...restAuthConfig, // Spread the rest of authConfig
+  ...restAuthConfig,
 });

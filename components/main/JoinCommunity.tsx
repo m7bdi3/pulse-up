@@ -160,3 +160,5 @@ export const JoinCommunity = () => {
     </section>
   );
 };
+
+export default JoinCommunity;

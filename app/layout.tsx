@@ -13,7 +13,7 @@ import { ourFileRouter } from "@/app/api/uploadthing/core";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LenisScroll } from "@/hooks/Lenis-Scroll";
 import { ModalProvider } from "@/components/providers/modal-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import InitUser from "@/hooks/store/initUser";
 //////////////////////////////////////////////////////////////////
@@ -41,12 +41,86 @@ const userInfo = async () => {
   const session = await auth();
 
   if (!session) return null;
+
   const user = await db.user.findUnique({
     where: {
       id: session?.user.id,
     },
   });
-  return user;
+  const progress = await db.progress.findMany({
+    where: {
+      userId: session.user.id,
+    },
+    orderBy: {
+      date: "desc",
+    },
+  });
+
+  const workoutPlan = await db.userWorkoutPlan.findUnique({
+    where: {
+      userId: session.user.id,
+    },
+    include: {
+      workoutPlan: true,
+    },
+  });
+
+  const userSessions = await db.userSessions.findMany({
+    where: {
+      workoutPlanId: workoutPlan?.id!,
+    },
+    include: {
+      exercises: {
+        include: {
+          exercise: true,
+        },
+      },
+    },
+    orderBy: {
+      day: "asc",
+    },
+  });
+
+  const nutritionPlan = await db.userNutritionPlan.findUnique({
+    where: {
+      userId: session.user.id,
+    },
+    include: {
+      nutritionPlan: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          description: true,
+        },
+      },
+    },
+  });
+
+  const userMeals = await db.userMealPlan.findMany({
+    where: {
+      userNutritionPlanId: nutritionPlan?.id,
+    },
+    include: {
+      meal: {
+        include: {
+          foods: true,
+        },
+      },
+    },
+    orderBy: {
+      day: "asc",
+    },
+  });
+
+  return {
+    user,
+    progress,
+    workoutPlan,
+    nutritionPlan,
+    userSessions,
+    userMeals,
+  };
 };
 export default async function RootLayout({
   children,
@@ -67,11 +141,20 @@ export default async function RootLayout({
         >
           <SessionProvider>
             <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-            <TooltipProvider>{children}</TooltipProvider>
+            <TooltipProvider>
+              {children}
+              <Toaster />
+            </TooltipProvider>
             <LenisScroll />
             <ModalProvider />
-            <Toaster />
-            <InitUser user={user || undefined} />
+            <InitUser
+              user={user?.user || undefined}
+              progress={user?.progress || undefined}
+              workoutPlan={user?.workoutPlan || null}
+              nutritionPlan={user?.nutritionPlan || null}
+              userSessions={user?.userSessions || null}
+              userMeals={user?.userMeals || null}
+            />
           </SessionProvider>
         </ThemeProvider>
       </body>

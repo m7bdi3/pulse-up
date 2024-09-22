@@ -102,3 +102,5 @@ export const SuccessStories = () => {
     </section>
   );
 };
+
+export default SuccessStories;

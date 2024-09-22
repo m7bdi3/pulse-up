@@ -2,9 +2,13 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, ChromeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { signIn } from "next-auth/react";
+import { useUser } from "@/hooks/store/user";
+import Link from "next/link";
 
 const benefits = [
   "Personalized workout plans",
@@ -38,11 +42,7 @@ const itemVariants = {
 };
 
 export const StartJourney = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted");
-  };
+  const { user } = useUser();
 
   return (
     <section className="py-16 md:py-24 bg-primary text-primary-foreground">
@@ -80,52 +80,54 @@ export const StartJourney = () => {
           </motion.div>
 
           <motion.div
-            className="bg-background text-foreground rounded-lg shadow-xl p-8"
+            className="bg-background text-foreground rounded-lg shadow-xl"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-semibold mb-6">Sign Up Now</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Full Name
-                </label>
-                <Input id="name" name="name" type="text" required />
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Email Address
-                </label>
-                <Input id="email" name="email" type="email" required />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Password
-                </label>
-                <Input id="password" name="password" type="password" required />
-              </div>
-              <Button type="submit" className="w-full">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </form>
-            <p className="text-sm text-muted-foreground mt-4 text-center">
-              By signing up, you agree to our Terms of Service and Privacy
-              Policy.
-            </p>
+            {!user ? (
+              <>
+                <Card className="flex flex-col items-center justify-center gap-2">
+                  <CardHeader>
+                    <h2 className="text-3xl font-black tracking-tighter text-center">
+                      Sign In
+                    </h2>
+                    <p className="text-neutral-600">
+                      Choose your preferred sign-in method.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-x-4 flex  items-center justify-center w-full">
+                    <Button
+                      variant="outline"
+                      className="justify-center gap-3 "
+                      onClick={() =>
+                        signIn("google", { redirectTo: "/dashboard" })
+                      }
+                    >
+                      <ChromeIcon className="h-6 w-6" />
+                      Sign in with Google
+                    </Button>
+                  </CardContent>
+                  <CardFooter className="text-center text-sm text-neutral-500">
+                    By continuing, you agree to our Terms of Service and Privacy
+                    Policy.
+                  </CardFooter>
+                </Card>
+              </>
+            ) : (
+              <>
+                <Link passHref href={"/pricing"}>
+                  <Button className="w-full" variant={"outline"}>
+                    See All Pricing
+                  </Button>
+                </Link>
+              </>
+            )}
           </motion.div>
         </div>
       </div>
     </section>
   );
 };
+
+export default StartJourney;

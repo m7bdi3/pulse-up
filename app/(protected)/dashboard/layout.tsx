@@ -1,13 +1,19 @@
-import AdminPanelLayout from "@/components/dashboard/admin-panel-layout";
+import AdminPanelLayout from "@/components/protected/admin-panel-layout";
+import { CheckUserData } from "@/components/protected/dashboard/CheckUserData";
+import { Toaster } from "@/components/ui/toaster";
 
-export default async function Adminlayout({
+export default async function Dashboardlayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <>
-      <AdminPanelLayout>{children}</AdminPanelLayout>
+      <AdminPanelLayout isAdmin={false}>
+        {children}
+        <CheckUserData />
+        <Toaster />
+      </AdminPanelLayout>
     </>
   );
 }

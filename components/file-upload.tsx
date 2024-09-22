@@ -1,13 +1,15 @@
 import { cn, UploadButton, UploadDropzone } from "@/lib/utils";
-import { ImageUpIcon, Loader, Loader2Icon, X } from "lucide-react";
+import { ImageUpIcon, Loader2Icon, X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 interface Props {
   onChange: (url?: string) => void;
   value: string;
-  endPoint: "imageUploader";
+  endPoint: "oneImage";
 }
 
 interface MultiProps {
@@ -37,8 +39,8 @@ export const FileUpload = ({ onChange, value, endPoint }: Props) => {
         }}
         className="mt-4 ut-button:bg-primary ut-button:ut-readying:bg-muted w-full"
       />
-      {value.length > 1 && (
-        <div className="relative w-full flex h-[300px]">
+      {value && (
+        <div className="relative w-full flex h-[100px]">
           <Image
             width={200}
             height={100}
@@ -138,19 +140,103 @@ export const ButtonUpload = ({ onChange, endPoint }: Props) => {
         }}
         appearance={{
           allowedContent: "hidden",
-          container: "w-8 h-8 rounded-full ",
         }}
         content={{
           button({ ready, uploadProgress, isUploading }) {
-            if (ready) return <ImageUpIcon className="h-4 w-4" />;
+            if (ready)
+              return (
+                <Button
+                  size={"icon"}
+                  className="flex items-center gap-2 w-full px-4"
+                >
+                  <ImageUpIcon className="h-4 w-4" />
+                  Choose file
+                </Button>
+              );
             if (isUploading)
               return <Loader2Icon className="h-4 w-4 animate-spin" />;
             if (uploadProgress)
               return <Loader2Icon className="h-4 w-4 animate-spin" />;
           },
         }}
-        className="ut-button:bg-primary ut-button:ut-readying:bg-muted m-0 ut-button:ut-ready:h-8 ut-button:ut-ready:w-8 ut-button:ut-ready:rounded-full ut-button:h-8 ut-button:w-8 ut-button:rounded-full ut-uploading:bg-primary"
       />
     </>
+  );
+};
+
+export const ButtonMultiFileUpload = ({
+  onChange,
+  value,
+  endPoint,
+}: MultiProps) => {
+  const handleUploadComplete = (res: { url: string }[]) => {
+    const newUrls = res.map((file) => file.url);
+    onChange([...value, ...newUrls]);
+    toast.success("Files uploaded successfully!");
+  };
+  return (
+    <div className="flex items-center justify-center w-full py-2 h-fit gap-4">
+      <UploadButton
+        endpoint={endPoint}
+        onClientUploadComplete={handleUploadComplete}
+        config={{
+          mode: "auto",
+        }}
+        onUploadError={(error) => {
+          toast.error(error?.message);
+        }}
+        appearance={{
+          allowedContent: "hidden",
+        }}
+        content={{
+          button({ ready, uploadProgress, isUploading }) {
+            if (ready)
+              return (
+                <Badge className="flex items-center p-2">
+                  <ImageUpIcon className="h-4 w-4" />
+                </Badge>
+              );
+            if (isUploading)
+              return <Loader2Icon className="h-4 w-4 animate-spin" />;
+            if (uploadProgress)
+              return <Loader2Icon className="h-4 w-4 animate-spin" />;
+          },
+        }}
+      />
+      <ScrollArea
+        className={cn(
+          "grid-flow-col gap-4 mt-4 bg-muted whitespace-nowrap rounded-md border",
+          value.length === 0 ? "hidden" : "grid"
+        )}
+      >
+        <div className="flex space-x-4 w-max p-2">
+          {value.map((url, index) => (
+            <div className="relative h-fit w-fit" key={index}>
+              <Image
+                width={100}
+                height={50}
+                src={url}
+                alt="Upload"
+                className="rounded-md"
+              />
+              <button
+                onClick={() => {
+                  const updatedImages = value.filter(
+                    (imageUrl) => imageUrl !== url
+                  );
+                  onChange(updatedImages);
+                }}
+                className="bg-destructive text-white p-1 rounded-full absolute top-0 right-0 shadow-sm"
+                type="button"
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Remove image</span>
+              </button>
+            </div>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </div>
   );
 };

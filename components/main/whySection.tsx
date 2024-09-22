@@ -108,3 +108,5 @@ export const WhyPulseUp = () => {
     </section>
   );
 };
+
+export default WhyPulseUp;
