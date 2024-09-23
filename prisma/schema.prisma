@@ -107,12 +107,12 @@ model SubscriptionPlan {
 
 model Subscription {
   id                     String             @id @default(cuid())
-  userId                 String             @unique
+  userId                 String
   planId                 String
-  stripeCustomerId       String             @unique
-  stripeSubscriptionId   String             @unique
-  stripePriceId          String
-  stripeCurrentPeriodEnd DateTime
+  stripeCustomerId       String?
+  stripeSubscriptionId   String? @unique
+  stripePriceId          String?
+  stripeCurrentPeriodEnd DateTime?
   status                 SubscriptionStatus
   autoRenew              Boolean            @default(true)
   createdAt              DateTime           @default(now())
@@ -124,7 +124,9 @@ model Subscription {
 }
 
 enum SubscriptionStatus {
+  LIFETIME
   ACTIVE
+  PENDING
   EXPIRED
   CANCELED
 }

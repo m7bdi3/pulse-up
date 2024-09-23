@@ -1,12 +1,19 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 
-const webhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET!;
-const stripe = new Stripe(process.env.STRIPE_SECERET_KEY as string, {
-  apiVersion: "2024-06-20",
-  typescript: true,
-});
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+const CorsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+  "Access-Control-Allow-Headers": "content-type, Authorization",
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: CorsHeaders });
+}
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -32,12 +39,8 @@ export async function POST(req: Request) {
 
   const session = event.data.object as Stripe.Checkout.Session;
 
-  if (event.type === "checkout.session.completed") {
-    try {
-      const subscription = await stripe.subscriptions.retrieve(
-        session.subscription as string
-      );
-
+  if (session.metadata?.planDuration === "0") {
+    if (event.type === "checkout.session.completed") {
       if (!session?.metadata?.userId) {
         return NextResponse.json(
           { error: "User ID not found in metadata" },
@@ -45,44 +48,76 @@ export async function POST(req: Request) {
         );
       }
 
-      await db.subscription.create({
-        data: {
-          userId: session.metadata.userId,
-          stripeSubscriptionId: subscription.id,
-          stripeCustomerId: subscription.customer as string,
-          stripePriceId: subscription.items.data[0].price.id,
-          stripeCurrentPeriodEnd: new Date(
-            subscription.current_period_end * 1000
-          ),
-          planId: session.metadata.planId,
-          status: "EXPIRED",
-        },
-      });
-    } catch (error) {
-      console.error("Failed to create subscription:", error);
-      return NextResponse.json(
-        { error: "Failed to create subscription" },
-        { status: 500 }
-      );
+      try {
+        await db.subscription.create({
+          data: {
+            userId: session.metadata.userId,
+            stripeCurrentPeriodEnd: null,
+            planId: session.metadata.planId,
+            status: "LIFETIME",
+          },
+        });
+      } catch (error) {
+        console.error("Failed to create subscription:", error);
+        return NextResponse.json(
+          { error: "Failed to create subscription" },
+          { status: 500 }
+        );
+      }
     }
-  }
+  } else {
+    if (event.type === "checkout.session.completed") {
+      try {
+        const subscription = await stripe.subscriptions.retrieve(
+          session.subscription as string
+        );
 
-  if (event.type === "invoice.payment_succeeded") {
-    try {
-      const subscription = await stripe.subscriptions.retrieve(
-        session.subscription as string
-      );
+        if (!session?.metadata?.userId) {
+          return NextResponse.json(
+            { error: "User ID not found in metadata" },
+            { status: 400 }
+          );
+        }
 
-      await db.subscription.update({
-        where: { stripeSubscriptionId: subscription.id },
-        data: { status: "ACTIVE" },
-      });
-    } catch (error) {
-      console.error("Failed to update subscription status:", error);
-      return NextResponse.json(
-        { error: "Failed to update subscription status" },
-        { status: 500 }
-      );
+        await db.subscription.create({
+          data: {
+            userId: session.metadata.userId,
+            stripeSubscriptionId: subscription.id,
+            stripeCustomerId: subscription.customer as string,
+            stripePriceId: subscription.items.data[0].price.id,
+            stripeCurrentPeriodEnd: new Date(
+              subscription.current_period_end * 1000
+            ),
+            planId: session.metadata.planId,
+            status: "PENDING",
+          },
+        });
+      } catch (error) {
+        console.error("Failed to create subscription:", error);
+        return NextResponse.json(
+          { error: "Failed to create subscription" },
+          { status: 500 }
+        );
+      }
+    }
+
+    if (event.type === "invoice.payment_succeeded") {
+      try {
+        const subscription = await stripe.subscriptions.retrieve(
+          session.subscription as string
+        );
+
+        await db.subscription.update({
+          where: { stripeSubscriptionId: subscription.id },
+          data: { status: "ACTIVE" },
+        });
+      } catch (error) {
+        console.error("Failed to update subscription status:", error);
+        return NextResponse.json(
+          { error: "Failed to update subscription status" },
+          { status: 500 }
+        );
+      }
     }
   }
 

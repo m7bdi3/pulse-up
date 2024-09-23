@@ -78,6 +78,7 @@ export const createStripeUrl = async (planId: string) => {
       metadata: {
         userId: session.user.id,
         planId,
+        planDuration: filteredPlan?.duration,
       },
     });
     return { data: stripeSession.url };
@@ -107,6 +108,7 @@ export const createStripeUrl = async (planId: string) => {
       metadata: {
         userId: session.user.id,
         planId,
+        planDuration: filteredPlan?.duration!,
       },
     });
     return { data: stripeSession.url };
