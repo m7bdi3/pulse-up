@@ -4,23 +4,19 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Exercise } from "@prisma/client";
 import { DataTable } from "@/components/DataTable";
 import { ExerciseColumns } from "@/app/(protected)/admin/exercise/_components/columns";
-import { ExerciseCreateForm } from "../forms/create-exercise-form";
+import { DeleteExercise } from "@/actions/ExerciseActions";
+import { toast } from "sonner";
+import { useModalStore } from "@/hooks/store/use-store-modal";
 
 interface Props {
   data: Exercise[];
 }
 
 export const ExercisesComponent = ({ data }: Props) => {
+  const { openExerciseForm } = useModalStore();
   const serializedData = data.map((item) => ({
     id: item.id,
     nameData: {
@@ -35,6 +31,15 @@ export const ExercisesComponent = ({ data }: Props) => {
     },
     equipment: item.equipment,
   }));
+  const handleDeleteRows = async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map((id) => DeleteExercise(id)));
+      toast.success(`Successfully deleted ${ids.length} exercise(s)`);
+    } catch (error) {
+      console.error("Error deleting exercises:", error);
+      toast.error("Failed to delete one or more exercise");
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -44,21 +49,12 @@ export const ExercisesComponent = ({ data }: Props) => {
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Exercises</h2>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Exercise
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New Exercise</DialogTitle>
-            </DialogHeader>
-            <ExerciseCreateForm />
-          </DialogContent>
-        </Dialog>
+        <Button onClick={openExerciseForm}>
+          <Plus className="mr-2 h-4 w-4" /> Add Exercise
+        </Button>
       </div>
       <DataTable
+        onDeleteRows={handleDeleteRows}
         columns={ExerciseColumns}
         data={serializedData}
         searchItem="nameData"

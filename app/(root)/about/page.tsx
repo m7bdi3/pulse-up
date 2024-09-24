@@ -1,258 +1,193 @@
-import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import Image from "next/image";
-import {
-  GiftIcon,
-  MountainIcon,
-  PowerIcon,
-  QrCodeIcon,
-  ShipIcon,
-  ShirtIcon,
-  SofaIcon,
-} from "lucide-react";
+"use client";
 
-export default function page() {
+import React from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Heart, Zap, Users, Award } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 12,
+      stiffness: 100,
+    },
+  },
+};
+
+interface TeamMember {
+  name: string;
+  role: string;
+  image: string;
+  bio: string;
+}
+
+const teamMembers: TeamMember[] = [
+  {
+    name: "Sarah Johnson",
+    role: "Founder & CEO",
+    image: "/placeholder.svg?height=300&width=300",
+    bio: "Sarah is a certified personal trainer with over 15 years of experience in the fitness industry. She founded PulseUp with the vision of making personalized fitness accessible to everyone.",
+  },
+  {
+    name: "Michael Chen",
+    role: "Chief Technology Officer",
+    image: "/placeholder.svg?height=300&width=300",
+    bio: "Michael brings his expertise in AI and machine learning to PulseUp, developing cutting-edge algorithms for personalized workout and nutrition plans.",
+  },
+  {
+    name: "Emily Rodriguez",
+    role: "Head of Nutrition",
+    image: "/placeholder.svg?height=300&width=300",
+    bio: "Emily is a registered dietitian with a passion for helping people achieve their health goals through balanced nutrition and sustainable eating habits.",
+  },
+  {
+    name: "David Kim",
+    role: "Lead Fitness Trainer",
+    image: "/placeholder.svg?height=300&width=300",
+    bio: "David is an experienced fitness trainer specializing in strength training and HIIT workouts. He oversees the development of PulseUp's diverse workout library.",
+  },
+];
+
+export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6 space-y-8 md:space-y-12">
-            <div className="grid gap-4 md:grid-cols-2 md:gap-8">
-              <div className="flex flex-col items-center h-full gap-4 justify-center">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  Welcome to Moto Shop
-                </h1>
-                <p className="mt-4 text-muted-foreground md:text-xl">
-                  We are a family-owned e-commerce business dedicated to
-                  providing high-quality products and exceptional customer
-                  service. Our mission is to make shopping a delightful
-                  experience for everyone.
-                </p>
-              </div>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/main/hero2.jpeg"
-                  width="400"
-                  height="400"
-                  alt="About Us"
-                  className="rounded-md object-cover"
-                />
-              </div>
-            </div>
+    <div className="container mx-auto px-4 py-16 md:py-24">
+      <motion.div
+        className="space-y-16"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.section className="text-center" variants={itemVariants}>
+          <h1 className="text-4xl font-bold mb-4">About PulseUp</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            PulseUp is on a mission to revolutionize personal fitness by making
+            expert-level training and nutrition guidance accessible to everyone,
+            anywhere, anytime.
+          </p>
+        </motion.section>
+
+        <motion.section variants={itemVariants}>
+          <h2 className="text-3xl font-bold mb-8 text-center">Our Mission</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Heart className="mr-2 text-primary" />
+                  Empower Individuals
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                We believe that everyone deserves access to high-quality fitness
+                guidance. Our platform empowers individuals to take control of
+                their health and achieve their fitness goals.
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Zap className="mr-2 text-primary" />
+                  Innovate Fitness Technology
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                By leveraging cutting-edge AI and machine learning, we&apos;re
+                constantly innovating to provide the most effective and
+                personalized fitness experience possible.
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Users className="mr-2 text-primary" />
+                  Foster Community
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                We&apos;re building a supportive community of fitness
+                enthusiasts who motivate and inspire each other on their
+                wellness journeys.
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Award className="mr-2 text-primary" />
+                  Promote Sustainable Health
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                Our approach focuses on long-term, sustainable health
+                improvements rather than quick fixes, ensuring lasting results
+                for our users.
+              </CardContent>
+            </Card>
           </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="container px-4 md:px-6 space-y-8 md:space-y-12">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Meet Our Team
-              </h2>
-              <p className="mt-4 text-muted-foreground dark:text-zinc-300 md:text-xl">
-                Our dedicated team of experts is passionate about delivering the
-                best shopping experience.
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              <div className="flex flex-col items-center gap-4">
-                <Avatar>
-                  <AvatarImage src="/placeholder-user.jpg" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold">John Doe</h3>
-                  <p className="text-muted-foreground dark:text-zinc-300">
-                    Co-Founder, CEO
-                  </p>
-                  <p className="text-sm text-muted-foreground dark:text-neutral-400">
-                    John has over 15 years of experience in e-commerce and
-                    retail management.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-4">
-                <Avatar>
-                  <AvatarImage src="/placeholder-user.jpg" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold">John Doe</h3>
-                  <p className="text-muted-foreground dark:text-zinc-300">
-                    Co-Founder, CEO
-                  </p>
-                  <p className="text-sm text-muted-foreground dark:text-neutral-400">
-                    John has over 15 years of experience in e-commerce and
-                    retail management.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-4">
-                <Avatar>
-                  <AvatarImage src="/placeholder-user.jpg" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold">John Doe</h3>
-                  <p className="text-muted-foreground dark:text-zinc-300">
-                    Co-Founder, CEO
-                  </p>
-                  <p className="text-sm text-muted-foreground dark:text-neutral-400">
-                    John has over 15 years of experience in e-commerce and
-                    retail management.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-4">
-                <Avatar>
-                  <AvatarImage src="/placeholder-user.jpg" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold">John Doe</h3>
-                  <p className="text-muted-foreground dark:text-zinc-300">
-                    Co-Founder, CEO
-                  </p>
-                  <p className="text-sm text-muted-foreground dark:text-neutral-400">
-                    John has over 15 years of experience in e-commerce and
-                    retail management.
-                  </p>
-                </div>
-              </div>
-            </div>
+        </motion.section>
+
+        <motion.section variants={itemVariants}>
+          <h2 className="text-3xl font-bold mb-8 text-center">Our Team</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {teamMembers.map((member, index) => (
+              <motion.div key={member.name} variants={itemVariants}>
+                <Card>
+                  <CardHeader>
+                    <div className="relative w-48 h-48 mx-auto mb-4 overflow-hidden rounded-full">
+                      <Image
+                        src={"/hero.jpg"}
+                        alt={member.name}
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                    </div>
+                    <CardTitle>{member.name}</CardTitle>
+                    <CardDescription>{member.role}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      {member.bio}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6 space-y-8 md:space-y-12">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Our Products and Services
-              </h2>
-              <p className="mt-4 text-muted-foreground md:text-xl">
-                Discover our wide range of high-quality products and exceptional
-                customer support.
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-              <div className="bg-muted rounded-md p-6 flex flex-col gap-4 h-80 justify-between">
-                <div className="flex items-center justify-center bg-primary rounded-full w-12 h-12">
-                  <ShirtIcon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold">Apparel</h3>
-                <p className="text-muted-foreground dark:text-neutral-300">
-                  Browse our collection of stylish and comfortable clothing for
-                  men, women, and children.
-                </p>
-                <Link
-                  href="#"
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1  disabled:pointer-events-none disabled:opacity-50 "
-                  prefetch={false}
-                >
-                  Shop Apparel
-                </Link>
-              </div>
-              <div className="bg-muted rounded-md p-6 flex flex-col gap-4 h-80 justify-between">
-                <div className="flex items-center justify-center bg-primary rounded-full w-12 h-12">
-                  <ShirtIcon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold">Apparel</h3>
-                <p className="text-muted-foreground dark:text-neutral-300">
-                  Browse our collection of stylish and comfortable clothing for
-                  men, women, and children.
-                </p>
-                <Link
-                  href="#"
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1  disabled:pointer-events-none disabled:opacity-50 "
-                  prefetch={false}
-                >
-                  Shop Apparel
-                </Link>
-              </div>
-              <div className="bg-muted rounded-md p-6 flex flex-col gap-4 h-80 justify-between">
-                <div className="flex items-center justify-center bg-primary rounded-full w-12 h-12">
-                  <ShirtIcon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold">Apparel</h3>
-                <p className="text-muted-foreground dark:text-neutral-300">
-                  Browse our collection of stylish and comfortable clothing for
-                  men, women, and children.
-                </p>
-                <Link
-                  href="#"
-                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1  disabled:pointer-events-none disabled:opacity-50 "
-                  prefetch={false}
-                >
-                  Shop Apparel
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="container px-4 md:px-6 space-y-8 md:space-y-12">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Why Choose Moto Shop?
-              </h2>
-              <p className="mt-4 text-muted-foreground md:text-xl">
-                Discover the benefits of shopping with us.
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-              <div className="bg-background rounded-md p-6 flex flex-col gap-4">
-                <div className="flex items-center justify-center bg-primary rounded-full w-12 h-12">
-                  <QrCodeIcon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold">High-Quality Products</h3>
-                <p className="text-muted-foreground">
-                  We carefully curate our product selection to ensure
-                  exceptional quality and durability.
-                </p>
-              </div>
-              <div className="bg-background rounded-md p-6 flex flex-col gap-4">
-                <div className="flex items-center justify-center bg-primary rounded-full w-12 h-12">
-                  <ShipIcon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold">
-                  Fast and Reliable Shipping
-                </h3>
-                <p className="text-muted-foreground">
-                  We offer fast and reliable shipping to ensure your purchases
-                  arrive quickly and safely.
-                </p>
-              </div>
-              <div className="bg-background rounded-md p-6 flex flex-col gap-4">
-                <div className="flex items-center justify-center bg-primary rounded-full w-12 h-12">
-                  <PowerIcon className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold">
-                  Exceptional Customer Support
-                </h3>
-                <p className="text-muted-foreground">
-                  Our dedicated customer support team is here to assist you with
-                  any questions or concerns.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6 space-y-8 md:space-y-12 text-center">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Explore Our Shop
-            </h2>
-            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              Browse our wide selection of high-quality products and find the
-              perfect items for your needs.
-            </p>
-            <Link
-              href="/shop"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1  disabled:pointer-events-none disabled:opacity-50"
-              prefetch={false}
-            >
-              Visit Our Shop
-            </Link>
-          </div>
-        </section>
-      </main>
+        </motion.section>
+
+        <motion.section className="text-center" variants={itemVariants}>
+          <h2 className="text-3xl font-bold mb-4">Join Us on Our Mission</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            Whether you&apos;re just starting your fitness journey or
+            you&apos;re a seasoned athlete, PulseUp is here to support you every
+            step of the way. Join our community today and experience the future
+            of personalized fitness.
+          </p>
+          <Button size="lg" asChild>
+            <a href="/signup">Get Started with PulseUp</a>
+          </Button>
+        </motion.section>
+      </motion.div>
     </div>
   );
 }

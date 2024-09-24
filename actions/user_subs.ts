@@ -13,12 +13,10 @@ const getUserSub = cache(async (planId: string) => {
   const session = await auth();
   if (!session?.user.id) return null;
 
-  const data = await db.subscription.findUnique({
+  const data = await db.subscription.findFirst({
     where: {
-      userId_planId: {
-        userId: session.user.id,
-        planId,
-      },
+      userId: session.user.id,
+      planId,
     },
   });
 
@@ -84,6 +82,7 @@ export const createStripeUrl = async (planId: string) => {
     return { data: stripeSession.url };
   } else {
     const interval = filteredPlan?.duration === 30 ? "month" : "year";
+
     const stripeSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
@@ -105,6 +104,13 @@ export const createStripeUrl = async (planId: string) => {
       ],
       success_url: returnUrl,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL as string}`,
+      subscription_data: {
+        metadata: {
+          userId: session.user.id,
+          planId,
+          planDuration: filteredPlan?.duration!,
+        },
+      },
       metadata: {
         userId: session.user.id,
         planId,

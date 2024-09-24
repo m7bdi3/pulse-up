@@ -67,6 +67,19 @@ const EquipmentCategory = z.enum([
   "NONE",
 ]);
 
+const BodyPart = z.enum([
+  "CHEST",
+  "BACK",
+  "SHOULDERS",
+  "ARMS",
+  "LEGS",
+  "GLUTES",
+  "ABS",
+  "CALVES",
+  "FOREARMS",
+  "CORE",
+]);
+
 export const UserRegisterData = z.object({
   phone: z
     .string()
@@ -156,6 +169,8 @@ export const ExerciseSchema = z.object({
   description: z.string().min(1, "Description is required"),
   duration: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
   repetitions: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
+  bodyPart: BodyPart,
+  caloriesBurned: z.preprocess((val) => Number(val), z.number().min(0)),
   sets: z.preprocess((val) => Number(val), z.number().min(0)).optional(),
   images: z.array(z.string().url("Invalid image URL")),
   equipments: z.array(z.enum(EquipmentCategory.options)).default(["NONE"]),

@@ -11,10 +11,9 @@ export default async function MealsPage() {
     },
   });
 
-  const Food = await db.food.findMany();
   return (
     <ContentLayout title="Meals" isAdmin>
-      <MealsComponent data={meal} foods={Food} />
+      <MealsComponent data={meal} />
     </ContentLayout>
   );
 }

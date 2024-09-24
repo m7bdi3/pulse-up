@@ -10,8 +10,11 @@ import {
   useSessionsStore,
   UserMealPlan,
   useMealsStore,
+  useNutriotionPlansStore,
+  useWorkoutPlansStore,
+  useFoodsStore,
 } from "@/hooks/store/user";
-import { Progress } from "@prisma/client";
+import { Food, NutritionPlan, Progress, WorkoutPlan } from "@prisma/client";
 
 export default function InitUser({
   user,
@@ -20,6 +23,9 @@ export default function InitUser({
   nutritionPlan,
   userSessions,
   userMeals,
+  nutritionPlans,
+  workoutPlans,
+  foods,
 }: {
   user: UserWithDetails | undefined;
   progress: Progress[] | undefined;
@@ -27,6 +33,9 @@ export default function InitUser({
   nutritionPlan: userNutritionPlan | null;
   userSessions: userSessions | null;
   userMeals: UserMealPlan | null;
+  nutritionPlans: NutritionPlan[] | null;
+  workoutPlans: WorkoutPlan[] | null;
+  foods: Food[] | null;
 }) {
   const initState = useRef(false);
 
@@ -35,9 +44,22 @@ export default function InitUser({
       useUser.setState({ user, progress, workoutPlan, nutritionPlan });
       useSessionsStore.setState({ sessions: userSessions });
       useMealsStore.setState({ userMeals: userMeals });
+      useNutriotionPlansStore.setState({ nutritionPlans });
+      useWorkoutPlansStore.setState({ WorkoutPlans: workoutPlans });
+      useFoodsStore.setState({ foods });
       initState.current = true;
     }
-  }, [user, progress, workoutPlan, nutritionPlan, userSessions, userMeals]);
+  }, [
+    user,
+    progress,
+    workoutPlan,
+    nutritionPlan,
+    userSessions,
+    userMeals,
+    nutritionPlans,
+    workoutPlans,
+    foods,
+  ]);
 
   return null;
 }

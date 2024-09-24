@@ -113,6 +113,9 @@ const userInfo = async () => {
     },
   });
 
+  const nutritionPlans = await db.nutritionPlan.findMany();
+  const workoutPlans = await db.workoutPlan.findMany();
+  const foods = await db.food.findMany();
   return {
     user,
     progress,
@@ -120,6 +123,9 @@ const userInfo = async () => {
     nutritionPlan,
     userSessions,
     userMeals,
+    nutritionPlans,
+    workoutPlans,
+    foods,
   };
 };
 export default async function RootLayout({
@@ -154,6 +160,9 @@ export default async function RootLayout({
               nutritionPlan={user?.nutritionPlan || null}
               userSessions={user?.userSessions || null}
               userMeals={user?.userMeals || null}
+              nutritionPlans={user?.nutritionPlans || null}
+              workoutPlans={user?.workoutPlans || null}
+              foods={user?.foods || null}
             />
           </SessionProvider>
         </ThemeProvider>

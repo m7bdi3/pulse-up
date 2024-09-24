@@ -28,7 +28,7 @@ export async function CreateMeal(values: z.infer<typeof MealSchema>) {
     mealType,
   } = validatedValues.data;
   try {
-    await db.mealTemplate.create({
+    await db.meal.create({
       data: {
         name,
         calories,
@@ -59,7 +59,7 @@ export async function DeleteMeal(id: string) {
   }
 
   try {
-    await db.mealTemplate.delete({
+    await db.meal.delete({
       where: {
         id,
       },

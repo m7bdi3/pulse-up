@@ -24,12 +24,6 @@ const features = [
     icon: Utensils,
   },
   {
-    title: "Goal-Oriented Programs",
-    description:
-      "Structured programs that guide you step-by-step towards achieving your fitness milestones.",
-    icon: Target,
-  },
-  {
     title: "Community Support",
     description:
       "Connect with a supportive community of like-minded individuals to stay motivated and accountable.",
@@ -94,7 +88,7 @@ export const WhyPulseUp = () => {
         </motion.div>
 
         <motion.div
-          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-8 md:grid-cols-2 lg:grid-cols-4"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"

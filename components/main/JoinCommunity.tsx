@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Users, Dumbbell, Scale, Trophy, Camera } from "lucide-react";
 
@@ -9,21 +8,6 @@ const socialProof = [
   { icon: Users, label: "Active Users", value: "500K+" },
   { icon: Dumbbell, label: "Workouts Completed", value: "10M+" },
   { icon: Scale, label: "Pounds Lost", value: "2M+" },
-];
-
-const userContent = [
-  {
-    image: "/placeholder.svg?height=300&width=300",
-    alt: "User progress photo 1",
-  },
-  {
-    image: "/placeholder.svg?height=300&width=300",
-    alt: "User progress photo 2",
-  },
-  {
-    image: "/placeholder.svg?height=300&width=300",
-    alt: "User progress photo 3",
-  },
 ];
 
 const achievements = [
@@ -75,12 +59,6 @@ const SocialProofItem = ({ icon: Icon, label, value }: any) => (
   </motion.div>
 );
 
-const UserContentItem = ({ image, alt }: any) => (
-  <motion.div className="relative h-40 w-40" variants={itemVariants}>
-    <Image src={image} alt={alt} fill className="object-cover rounded-lg" />
-  </motion.div>
-);
-
 const AchievementItem = ({ icon: Icon, title, description }: any) => (
   <motion.div className="flex items-start space-x-4" variants={itemVariants}>
     <div className="bg-primary/10 p-3 rounded-full">
@@ -117,7 +95,7 @@ export const JoinCommunity = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, amount: 0.2 }}
+          viewport={{ once: false }}
         >
           {socialProof.map((item, index) => (
             <SocialProofItem key={index} {...item} />
@@ -125,27 +103,10 @@ export const JoinCommunity = () => {
         </motion.div>
 
         <motion.div
-          className="mb-16"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, amount: 0.2 }}
-        >
-          <h3 className="text-2xl font-semibold mb-6 text-center">
-            User-Generated Content
-          </h3>
-          <div className="flex justify-center space-x-4">
-            {userContent.map((item, index) => (
-              <UserContentItem key={index} {...item} />
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, amount: 0.2 }}
+          viewport={{ once: false }}
         >
           <h3 className="text-2xl font-semibold mb-6 text-center">
             Community Achievements

@@ -15,6 +15,7 @@ import { MealColumns } from "@/app/(protected)/admin/meals/_components/columns";
 import { MealCreateForm } from "../forms/create-Meal-form";
 import { DeleteMeal } from "@/actions/MealsActions";
 import { toast } from "sonner";
+import { useModalStore } from "@/hooks/store/use-store-modal";
 
 export type MealWithFood = {
   id: string;
@@ -40,10 +41,10 @@ export type MealWithFood = {
 
 interface Props {
   data: MealWithFood[];
-  foods: Food[];
 }
 
-export const MealsComponent = ({ data, foods }: Props) => {
+export const MealsComponent = ({ data }: Props) => {
+  const { openMealForm } = useModalStore();
   const serializedData = data.map((item) => ({
     id: item.id,
     name: item.name,
@@ -74,19 +75,9 @@ export const MealsComponent = ({ data, foods }: Props) => {
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Meals</h2>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Meal Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Add New Meal Item</DialogTitle>
-            </DialogHeader>
-            <MealCreateForm foods={foods} />
-          </DialogContent>
-        </Dialog>
+        <Button onClick={openMealForm}>
+          <Plus className="mr-2 h-4 w-4" /> Add Meal Item
+        </Button>
       </div>
       <DataTable
         onDeleteRows={handleDeleteRows}

@@ -7,7 +7,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { TransitionLink } from "@/components/LinkTransition";
+import Link from "next/link";
 
 interface Props {
   isMobile: boolean;
@@ -15,7 +15,7 @@ interface Props {
 
 export const HeaderNavigation = ({ isMobile }: Props) => {
   const navItems = [
-    { href: "/pricing", label: "Pricing" },
+    { href: "/subscription", label: "Pricing" },
     { href: "/blog", label: "Blog" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "contact" },
@@ -24,13 +24,13 @@ export const HeaderNavigation = ({ isMobile }: Props) => {
   const MobileNav = () => (
     <nav className="flex flex-col items-start justify-center gap-4 w-full h-full">
       {navItems.map((item) => (
-        <TransitionLink
+        <Link
           key={item.href}
           href={item.href}
           className="text-lg font-medium hover:underline hover:underline-offset-4"
         >
           {item.label}
-        </TransitionLink>
+        </Link>
       ))}
     </nav>
   );
@@ -41,13 +41,13 @@ export const HeaderNavigation = ({ isMobile }: Props) => {
         {navItems.map((item) => (
           <NavigationMenuItem key={item.href}>
             <NavigationMenuLink asChild>
-              <TransitionLink
+              <Link
                 href={item.href}
                 prefetch
                 className="text-base font-medium hover:underline hover:underline-offset-4"
               >
                 {item.label}
-              </TransitionLink>
+              </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
         ))}

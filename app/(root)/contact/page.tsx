@@ -1,102 +1,214 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+"use client";
+
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { MapPin, Phone, Mail, Send } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { ClockIcon, LocateIcon, PhoneIcon } from "lucide-react";
+import { toast } from "sonner";
 
-export default function Page() {
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  subject: z.string().min(5, {
+    message: "Subject must be at least 5 characters.",
+  }),
+  message: z.string().min(10, {
+    message: "Message must be at least 10 characters.",
+  }),
+});
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 12,
+      stiffness: 100,
+    },
+  },
+};
+
+export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      console.log(values);
+      setIsSubmitting(false);
+      toast.success("Message sent successfully!");
+      form.reset();
+    }, 2000);
+  }
+
   return (
-    <div className="w-full">
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-        <div className="container grid items-center justify-center gap-8 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
-          <div className="space-y-4">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Get in Touch
-            </h1>
-            <p className="max-w-[600px] text-muted-foreground md:text-xl">
-              Have a question or need help? Fill out the form below and our team
-              will get back to you as soon as possible.
-            </p>
-          </div>
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Contact Us</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form className="grid gap-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" placeholder="John Doe" />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input id="subject" placeholder="How can we help?" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea
-                    id="message"
-                    rows={5}
-                    placeholder="Write your message..."
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  Send Message
+    <div className="container mx-auto px-4 py-16 md:py-24">
+      <motion.div
+        className="space-y-16"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.section className="text-center" variants={itemVariants}>
+          <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Have a question or feedback? We&apos;d love to hear from you. Get in
+            touch with our team using the form below or through our contact
+            information.
+          </p>
+        </motion.section>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 px-4">
+          <motion.section variants={itemVariants}>
+            <h2 className="text-2xl font-semibold mb-6">Send Us a Message</h2>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subject</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Message subject" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Message</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Your message" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>Sending...</>
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               </form>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-      <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container grid items-start gap-8 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-              Our Office
-            </h2>
-            <div className="grid gap-2">
-              <div className="flex items-center gap-2">
-                <LocateIcon className="h-5 w-5 text-muted-foreground" />
-                <p>123 Main St, Anytown USA</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <PhoneIcon className="h-5 w-5 text-muted-foreground" />
-                <p>+1 (123) 456-7890</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <ClockIcon className="h-5 w-5 text-muted-foreground" />
-                <p>Mon - Fri: 9am - 5pm</p>
+            </Form>
+          </motion.section>
+
+          <motion.section variants={itemVariants} className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">
+                Contact Information
+              </h2>
+              <ul className="space-y-4">
+                <li className="flex items-center">
+                  <MapPin className="mr-2 h-5 w-5 text-primary" />
+                  <span>123 Fitness Street, Healthy City, 12345</span>
+                </li>
+                <li className="flex items-center">
+                  <Phone className="mr-2 h-5 w-5 text-primary" />
+                  <span>+1 (555) 123-4567</span>
+                </li>
+                <li className="flex items-center">
+                  <Mail className="mr-2 h-5 w-5 text-primary" />
+                  <span>contact@pulseup.com</span>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">Our Location</h2>
+              <div className="aspect-video">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.2412648731966!2d-73.98784892404045!3d40.75839383566361!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1685153000000!5m2!1sen!2sus"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="PulseUp Location Map"
+                ></iframe>
               </div>
             </div>
-          </div>
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-              Find Us
-            </h2>
-            <div className="aspect-video overflow-hidden rounded-md">
-              <Image
-                src="/main/hero1.jpeg"
-                alt="Map"
-                width="550"
-                height="550"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
+          </motion.section>
         </div>
-      </section>
+      </motion.div>
     </div>
   );
 }

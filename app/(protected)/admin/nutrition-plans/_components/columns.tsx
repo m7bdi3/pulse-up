@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DeleteNutritionPlan } from "@/actions/NutritionPlanAction";
 import { toast } from "sonner";
-import { MealType } from "@prisma/client";
 
 export interface NutritionPlanColumn {
   id: string;
@@ -28,12 +27,6 @@ export interface NutritionPlanColumn {
     name: string;
     image: string;
   };
-  meals:
-    | {
-        id: string;
-        name: string;
-      }[]
-    | undefined;
 }
 
 const handleDelete = async (id: string) => {
@@ -98,46 +91,6 @@ export const NutritionPlanColumns: ColumnDef<NutritionPlanColumn>[] = [
     filterFn: (row, id, value) => {
       const { name } = row.getValue(id) as NutritionPlanColumn["nameData"];
       return name.toLowerCase().includes(value.toLowerCase());
-    },
-  },
-  {
-    accessorKey: "meals",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Meals
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const meals = row.getValue("meals") as NutritionPlanColumn["meals"];
-      return (
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <Button variant="ghost" size="sm">
-              {meals?.length || 0} meal{meals?.length !== 1 ? "s" : ""}
-            </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-64">
-            <h4 className="mb-2 font-semibold">Meals in this plan:</h4>
-            {meals?.length ? (
-              <ul className="space-y-1">
-                {meals.map((meal) => (
-                  <li key={meal.id} className="text-sm">
-                    {meal.name}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                No meals in this plan
-              </p>
-            )}
-          </HoverCardContent>
-        </HoverCard>
-      );
     },
   },
 

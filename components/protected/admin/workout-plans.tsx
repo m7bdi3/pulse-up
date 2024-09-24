@@ -16,6 +16,9 @@ import { DifficultyLevel } from "@prisma/client";
 import { DataTable } from "@/components/DataTable";
 import { WorkoutPlansColumns } from "@/app/(protected)/admin/workout-plans/_components/columns";
 import { WorkoutPlanCreateForm } from "../forms/create-workout-form";
+import { toast } from "sonner";
+import { DeleteWorkoutPlan } from "@/actions/WorkoutPlansActions";
+import { useModalStore } from "@/hooks/store/use-store-modal";
 
 interface Props {
   data: {
@@ -32,6 +35,7 @@ interface Props {
 }
 
 export const WorkOutPlansComponent = ({ data }: Props) => {
+  const { openWorkoutplanForm } = useModalStore();
   const serializedData = data.map((item) => ({
     id: item.id,
     nameData: {
@@ -42,6 +46,15 @@ export const WorkOutPlansComponent = ({ data }: Props) => {
     goal: item.goal,
     duration: item.duration,
   }));
+  const handleDeleteRows = async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map((id) => DeleteWorkoutPlan(id)));
+      toast.success(`Successfully deleted ${ids.length} plan(s)`);
+    } catch (error) {
+      console.error("Error deleting plans:", error);
+      toast.error("Failed to delete one or more plan");
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -50,21 +63,12 @@ export const WorkOutPlansComponent = ({ data }: Props) => {
       className="p-6 bg-background rounded-lg shadow-md"
     >
       <div className="flex justify-end items-center mb-6">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Plan
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create a New Workout Plan</DialogTitle>
-            </DialogHeader>
-            <WorkoutPlanCreateForm />
-          </DialogContent>
-        </Dialog>
+        <Button onClick={openWorkoutplanForm}>
+          <Plus className="mr-2 h-4 w-4" /> Add Plan
+        </Button>
       </div>
       <DataTable
+        onDeleteRows={handleDeleteRows}
         columns={WorkoutPlansColumns}
         data={serializedData}
         searchItem="nameData"

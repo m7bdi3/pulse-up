@@ -3,20 +3,13 @@ import { motion } from "framer-motion";
 import { Loader2Icon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Food } from "@prisma/client";
-import { FoodCreateForm } from "../forms/create-food-form";
 import { DataTable } from "@/components/DataTable";
 import { FoodColumns } from "@/app/(protected)/admin/food-database/_components/columns";
 import { DeleteFood } from "@/actions/FoodActions";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useModalStore } from "@/hooks/store/use-store-modal";
 
 interface Props {
   data: Food[];
@@ -24,6 +17,7 @@ interface Props {
 
 export const FoodDatabaseComponent = ({ data }: Props) => {
   const [loading, setLoading] = useState(false);
+  const { openFoodForm } = useModalStore();
   const serializedData = data.map((item) => ({
     id: item.id,
     nameData: {
@@ -60,19 +54,9 @@ export const FoodDatabaseComponent = ({ data }: Props) => {
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Food Database</h2>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Food Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Food Item</DialogTitle>
-            </DialogHeader>
-            <FoodCreateForm />
-          </DialogContent>
-        </Dialog>
+        <Button onClick={openFoodForm}>
+          <Plus className="mr-2 h-4 w-4" /> Add Food Item
+        </Button>
       </div>
       {loading ? (
         <div className="w-full h-screen flex flex-col items-center justify-center">

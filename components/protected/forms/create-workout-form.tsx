@@ -22,9 +22,12 @@ import { DifficultyLevel } from "@prisma/client";
 
 import { Textarea } from "@/components/ui/textarea";
 import { CreateWorkoutPlan } from "@/actions/WorkoutPlansActions";
+import { Modal } from "@/components/modal";
+import { useModalStore } from "@/hooks/store/use-store-modal";
 
 export const WorkoutPlanCreateForm = () => {
   const [loading, setLoading] = useState(false);
+  const StoreModal = useModalStore();
 
   const form = useForm<z.infer<typeof WorkoutPlanSchema>>({
     resolver: zodResolver(WorkoutPlanSchema),
@@ -53,131 +56,137 @@ export const WorkoutPlanCreateForm = () => {
       toast.error("An unexpected error occurred while creating the food.");
     } finally {
       setLoading(false);
+      StoreModal.closeWorkoutplanForm();
     }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CardContent className="p-2 space-y-4">
+    <Modal
+      isOpen={StoreModal.isWorkoutplanFormOpen}
+      onClose={StoreModal.closeWorkoutplanForm}
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <CardContent className="p-2 space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      placeholder="Name your plan"
+                      disabled={loading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="difficulty"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Choose Exercise category</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex items-center gap-2 flex-wrap"
+                    >
+                      {DifficultyValues.map((value, i) => (
+                        <FormItem
+                          className="flex items-center space-x-3 space-y-0"
+                          key={i}
+                        >
+                          <FormControl>
+                            <RadioGroupItem value={value} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{value}</FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="duration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      placeholder="Duration in days"
+                      disabled={loading}
+                      {...field}
+                      type="number"
+                      step={1}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="goal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="Goal" disabled={loading} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Descripe the exercise"
+                      disabled={loading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
           <FormField
             control={form.control}
-            name="name"
+            name="image"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="">
+                <FormLabel>Workout Image</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Name your plan"
-                    disabled={loading}
-                    {...field}
+                  <FileUpload
+                    endPoint="oneImage"
+                    onChange={field.onChange}
+                    value={field.value}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="difficulty"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Choose Exercise category</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex items-center gap-2 flex-wrap"
-                  >
-                    {DifficultyValues.map((value, i) => (
-                      <FormItem
-                        className="flex items-center space-x-3 space-y-0"
-                        key={i}
-                      >
-                        <FormControl>
-                          <RadioGroupItem value={value} />
-                        </FormControl>
-                        <FormLabel className="font-normal">{value}</FormLabel>
-                      </FormItem>
-                    ))}
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <FormField
-            control={form.control}
-            name="duration"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    placeholder="Duration in days"
-                    disabled={loading}
-                    {...field}
-                    type="number"
-                    step={1}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="goal"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Goal" disabled={loading} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea
-                    placeholder="Descripe the exercise"
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem className="">
-              <FormLabel>Workout Image</FormLabel>
-              <FormControl>
-                <FileUpload
-                  endPoint="oneImage"
-                  onChange={field.onChange}
-                  value={field.value}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex justify-end">
-          <Button disabled={loading} type="submit">
-            {loading ? "Creating..." : "Create Plan"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          <div className="flex justify-end">
+            <Button disabled={loading} type="submit">
+              {loading ? "Creating..." : "Create Plan"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </Modal>
   );
 };

@@ -71,7 +71,7 @@ const TestimonialCard = ({ quote, name, image }: any) => (
 
 export const SuccessStories = () => {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-16 md:py-24 bg-muted min-h-screen flex items-center justify-center">
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-12"
@@ -92,7 +92,7 @@ export const SuccessStories = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, amount: 0.2 }}
+          viewport={{ once: false }}
         >
           {testimonials.map((testimonial, index) => (
             <TestimonialCard key={index} {...testimonial} />

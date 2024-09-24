@@ -4,14 +4,16 @@ import {
   DifficultyLevel,
   ExerciseCategory,
   ExerciseEquipment,
+  Food,
   FoodCategory,
   Gender,
   Goal,
   MealType,
-  Post,
+  NutritionPlan,
   Progress,
   SessionType,
   UserRole,
+  WorkoutPlan,
 } from "@prisma/client";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -180,6 +182,7 @@ export type PostsWithData = {
     comments: number;
   };
 };
+
 interface userState {
   user: UserWithDetails | undefined;
   progress: Progress[] | undefined;
@@ -299,6 +302,54 @@ export const useChallengesStore = create(
             : null,
         }));
       },
+    }),
+    {
+      name: "Sessions-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
+
+interface NutritionPlans {
+  nutritionPlans: NutritionPlan[] | null;
+}
+
+export const useNutriotionPlansStore = create(
+  persist<NutritionPlans>(
+    () => ({
+      nutritionPlans: [],
+    }),
+    {
+      name: "Sessions-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
+
+interface WorkoutPlans {
+  WorkoutPlans: WorkoutPlan[] | null;
+}
+
+export const useWorkoutPlansStore = create(
+  persist<WorkoutPlans>(
+    () => ({
+      WorkoutPlans: [],
+    }),
+    {
+      name: "Sessions-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
+
+interface FoodsStore {
+  foods: Food[] | null;
+}
+
+export const useFoodsStore = create(
+  persist<FoodsStore>(
+    () => ({
+      foods: [],
     }),
     {
       name: "Sessions-storage",

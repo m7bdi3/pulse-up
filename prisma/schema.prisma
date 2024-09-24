@@ -68,6 +68,7 @@ model User {
   Like                Like[]
   UserChallenge       UserChallenge[]
   UserEvent           UserEvent[]
+  LifeTimePayment     LifeTimePayment[]
 }
 
 model Progress {
@@ -95,30 +96,44 @@ model Progress {
 }
 
 model SubscriptionPlan {
-  id            String         @id @default(cuid())
-  name          String
-  description   String?
-  price         Float
-  duration      Int
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  subscriptions Subscription[]
+  id              String            @id @default(cuid())
+  name            String
+  description     String?
+  price           Float
+  duration        Int
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  subscriptions   Subscription[]
+  LifeTimePayment LifeTimePayment[]
 }
 
 model Subscription {
   id                     String             @id @default(cuid())
   userId                 String
   planId                 String
-  stripeCustomerId       String?
-  stripeSubscriptionId   String? @unique
-  stripePriceId          String?
-  stripeCurrentPeriodEnd DateTime?
+  stripeCustomerId       String             @unique
+  stripeSubscriptionId   String             @unique
+  stripePriceId          String
+  stripeCurrentPeriodEnd DateTime
   status                 SubscriptionStatus
-  autoRenew              Boolean            @default(true)
+  subscriptionPrice      Int
+  autoRenew              Boolean            @default(false)
   createdAt              DateTime           @default(now())
   updatedAt              DateTime           @updatedAt
   user                   User               @relation(fields: [userId], references: [id])
   plan                   SubscriptionPlan   @relation(fields: [planId], references: [id])
+}
+
+model LifeTimePayment {
+  id        String             @id @default(cuid())
+  userId    String
+  planId    String
+  price     Int
+  Status    SubscriptionStatus
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      SubscriptionPlan   @relation(fields: [planId], references: [id])
 
   @@unique([userId, planId])
 }

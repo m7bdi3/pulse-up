@@ -1,16 +1,19 @@
+import { Footer } from "@/components/main/Footer";
+import { Header } from "@/components/main/Header";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Page() {
+export default async function NotfoundPage() {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-md text-center">
+      <Header />
+      <div className="mx-auto max-w-md text-center py-12 md:py-24 h-screen">
         <Image
           src="/sad-dumbbell.svg"
           alt="Lost explorer"
           width={600}
           height={600}
-          className="mx-auto mb-6 rounded-full"
+          className="mx-auto mb-6"
         />
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Oops, looks like you&apos;re lost!
@@ -28,6 +31,7 @@ export default function Page() {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

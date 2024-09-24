@@ -4,16 +4,7 @@ import { NutritionPlansComponent } from "@/components/protected/admin/NutritionP
 import { db } from "@/lib/db";
 
 export default async function NutritionPlanPage() {
-  const plans = await db.nutritionPlan.findMany({
-    include: {
-      meals: {
-        select: {
-          name: true,
-          id: true,
-        },
-      },
-    },
-  });
+  const plans = await db.nutritionPlan.findMany();
   return (
     <ContentLayout title="Nutrition Plan" isAdmin>
       <NutritionPlansComponent data={plans} />

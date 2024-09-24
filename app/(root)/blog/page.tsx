@@ -1,196 +1,232 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-
-import { Input } from "@/components/ui/input";
+import React, { useState } from "react";
 import Image from "next/image";
-import { SearchIcon } from "lucide-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-export default function Page() {
-  const recentPosts = [
-    {
-      id: 1,
-      title: "The Ultimate Guide to Sustainable Fashion",
-      excerpt:
-        "Discover how to build an eco-friendly wardrobe and reduce your fashion footprint.",
-      image: "/main/hero2.jpeg",
-    },
-    {
-      id: 2,
-      title: "5 Trending Accessories for Summer 2024",
-      excerpt:
-        "Stay on top of the latest fashion trends with these must-have summer accessories.",
-      image: "/main/hero2.jpeg",
-    },
-    {
-      id: 3,
-      title: "How to Care for Your Leather Goods",
-      excerpt:
-        "Learn the best practices for maintaining the quality and longevity of your leather products.",
-      image: "/main/hero2.jpeg",
-    },
-    {
-      id: 4,
-      title: "The Rise of Athleisure: Comfort Meets Style",
-      excerpt:
-        "Explore the growing trend of athleisure and how to incorporate it into your wardrobe.",
-      image: "/main/hero2.jpeg",
-    },
-    {
-      id: 5,
-      title: "Minimalist Wardrobe Essentials for Every Season",
-      excerpt:
-        "Build a versatile, sustainable wardrobe with these timeless and practical pieces.",
-      image: "/main/hero2.jpeg",
-    },
-    {
-      id: 6,
-      title: "The Art of Layering: Mastering Transitional Dressing",
-      excerpt:
-        "Learn how to effortlessly layer your clothing for any weather or occasion.",
-      image: "/main/hero2.jpeg",
-    },
-  ];
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  category: string;
+  imageUrl: string;
+  readTime: number;
+}
+
+const dummyPosts: BlogPost[] = [
+  {
+    id: "1",
+    title: "10 Essential Exercises for Building Core Strength",
+    excerpt:
+      "Discover the key exercises that will help you develop a strong and stable core...",
+    author: "Jane Doe",
+    date: "2023-05-15",
+    category: "Fitness",
+    imageUrl: "/hero.jpg",
+    readTime: 5,
+  },
+  {
+    id: "2",
+    title: "The Ultimate Guide to Meal Prepping for Busy Professionals",
+    excerpt:
+      "Learn how to efficiently plan and prepare your meals for the week ahead...",
+    author: "John Smith",
+    date: "2023-05-10",
+    category: "Nutrition",
+    imageUrl: "/hero.jpg",
+    readTime: 8,
+  },
+  {
+    id: "3",
+    title: "How to Stay Motivated on Your Fitness Journey",
+    excerpt:
+      "Discover proven strategies to keep yourself motivated and committed to your fitness goals...",
+    author: "Emily Johnson",
+    date: "2023-05-05",
+    category: "Motivation",
+    imageUrl: "/hero.jpg",
+    readTime: 6,
+  },
+  {
+    id: "4",
+    title: "The Benefits of High-Intensity Interval Training (HIIT)",
+    excerpt:
+      "Explore the numerous advantages of incorporating HIIT workouts into your fitness routine...",
+    author: "Michael Brown",
+    date: "2023-04-30",
+    category: "Workouts",
+    imageUrl: "/hero.jpg",
+    readTime: 7,
+  },
+  {
+    id: "5",
+    title: "Understanding Macronutrients: A Beginner's Guide",
+    excerpt:
+      "Learn the basics of macronutrients and how to balance them for optimal health and fitness...",
+    author: "Sarah Wilson",
+    date: "2023-04-25",
+    category: "Nutrition",
+    imageUrl: "/hero.jpg",
+    readTime: 10,
+  },
+];
+
+const itemsPerPage = 4;
+
+export default function BlogPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(3);
-  const totalPages = Math.ceil(recentPosts.length / postsPerPage);
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = recentPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredPosts = dummyPosts.filter((post) =>
+    post.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPosts = filteredPosts.slice(startIndex, endIndex);
+
+  const featuredPost = dummyPosts[0];
 
   return (
-    <div className="w-full">
-      <section className="relative h-[500px] overflow-hidden">
-        <Image
-          src="/main/hero2.jpeg"
-          alt="Featured Blog Post"
-          width={1200}
-          height={500}
-          className="h-full w-full object-cover"
+    <div className="container mx-auto px-4 py-12 md:py-24">
+      <h1 className="text-6xl font-bold mb-8 text-center">PulseUp Blog</h1>
+
+      <div className="mb-8 mx-auto">
+        <Input
+          type="text"
+          placeholder="Search blog posts..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-md"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 lg:p-16">
-          <h1 className="text-3xl font-bold  md:text-4xl lg:text-5xl">
-            The Ultimate Guide to Sustainable Fashion
-          </h1>
-          <p className="mt-4 text-lg  md:text-xl lg:text-2xl">
-            Discover how to build an eco-friendly wardrobe and reduce your
-            fashion footprint.
-          </p>
-        </div>
-      </section>
-      <div className="container mx-auto my-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {currentPosts.map((post) => (
-          <Link href="#" key={post.id} className="group" prefetch={false}>
-            <div className="overflow-hidden rounded-md shadow-lg transition-all duration-300 ease-in-out group-hover:scale-105">
-              <Image
-                src="/main/hero2.jpeg"
-                alt={post.title}
-                width={400}
-                height={225}
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-xl font-bold ">{post.title}</h2>
-                <p className="mt-2 text-muted-foreground">{post.excerpt}</p>
-              </div>
-            </div>
-          </Link>
-        ))}
       </div>
-      <div className="container mx-auto my-12 flex justify-center"></div>
-      <div className="container mx-auto my-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-        <div className="rounded-md bg-muted p-6">
-          <h3 className="text-xl font-bold ">Categories</h3>
-          <div className="mt-4 grid gap-2">
-            <Link
-              href="#"
-              className="text-muted-foreground hover:"
-              prefetch={false}
-            >
-              Fashion
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground hover:"
-              prefetch={false}
-            >
-              Accessories
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground hover:"
-              prefetch={false}
-            >
-              Sustainable Living
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground hover:"
-              prefetch={false}
-            >
-              Trends
-            </Link>
-          </div>
-        </div>
-        <div className="rounded-md bg-muted p-6">
-          <h3 className="text-xl font-bold ">Tags</h3>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href="#"
-              className="rounded-full bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90"
-              prefetch={false}
-            >
-              Fashion
-            </Link>
-            <Link
-              href="#"
-              className="rounded-full bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90"
-              prefetch={false}
-            >
-              Sustainable
-            </Link>
-            <Link
-              href="#"
-              className="rounded-full bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90"
-              prefetch={false}
-            >
-              Accessories
-            </Link>
-            <Link
-              href="#"
-              className="rounded-full bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90"
-              prefetch={false}
-            >
-              Trends
-            </Link>
-            <Link
-              href="#"
-              className="rounded-full bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90"
-              prefetch={false}
-            >
-              Wardrobe
-            </Link>
-          </div>
-        </div>
-        <div className="rounded-md bg-muted p-6">
-          <h3 className="text-xl font-bold ">Search</h3>
-          <div className="mt-4">
-            <form>
-              <div className="relative">
-                <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search blog posts..."
-                  className="w-full rounded-md bg-background pl-8 shadow-none"
+
+      {currentPage === 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="mb-8">
+            <div className="md:flex">
+              <div className="md:w-2/3 relative h-64 md:h-auto">
+                <Image
+                  src={featuredPost.imageUrl}
+                  alt={featuredPost.title}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-t-lg md:rounded-l-lg md:rounded-t-none"
                 />
               </div>
-            </form>
-          </div>
-        </div>
+              <div className="md:w-1/3 p-6">
+                <Badge>{featuredPost.category}</Badge>
+                <CardTitle className="mt-2 mb-2">
+                  {featuredPost.title}
+                </CardTitle>
+                <CardDescription>{featuredPost.excerpt}</CardDescription>
+                <div className="mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    By {featuredPost.author} | {featuredPost.date}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {featuredPost.readTime} min read
+                  </p>
+                </div>
+                <Button asChild className="mt-4">
+                  <Link href={`/blog/${featuredPost.id}`}>Read More</Link>
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {currentPosts.map((post, index) => (
+          <motion.div
+            key={post.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card className="h-full flex flex-col">
+              <div className="relative h-48">
+                <Image
+                  src={post.imageUrl}
+                  alt={post.title}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-t-lg"
+                />
+              </div>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <Badge>{post.category}</Badge>
+                  <p className="text-sm text-muted-foreground">
+                    {post.readTime} min read
+                  </p>
+                </div>
+                <CardTitle className="mt-2">{post.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>{post.excerpt}</CardDescription>
+              </CardContent>
+              <CardFooter className="mt-auto">
+                <div className="flex justify-between items-center w-full">
+                  <p className="text-sm text-muted-foreground">
+                    By {post.author} | {post.date}
+                  </p>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/blog/${post.id}`}>Read More</Link>
+                  </Button>
+                </div>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center my-8">
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+          <span className="mx-4 flex items-center">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
