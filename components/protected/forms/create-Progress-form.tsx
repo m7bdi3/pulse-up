@@ -5,16 +5,10 @@ import * as z from "zod";
 import { ProgressSchema } from ".";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,7 +31,7 @@ export const ProgressCreateForm = () => {
   const [bodyFat, setBodyFat] = useState(0);
   const [muscleMass, setMuscleMass] = useState(0);
 
-  const { user, addNewProgress, progress } = useUser();
+  const { user, addNewProgress } = useUser();
 
   const form = useForm<z.infer<typeof ProgressSchema>>({
     resolver: zodResolver(ProgressSchema),

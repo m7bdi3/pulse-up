@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { MenuIcon, X } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 import {
   Sheet,
   SheetContent,
