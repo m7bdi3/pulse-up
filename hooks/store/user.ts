@@ -411,7 +411,6 @@ export type UserWithData = {
       createdAt: Date;
       updatedAt: Date;
       exercises: {
-        sessionId: string;
         exerciseId: string;
         exercise: {
           id: string;
@@ -425,7 +424,7 @@ export type UserWithData = {
           images: string[];
           equipment: ExerciseEquipment[];
           category: ExerciseCategory;
-        }[];
+        };
       }[];
     }[];
   } | null;
