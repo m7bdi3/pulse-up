@@ -19,31 +19,19 @@ const navigationLinks = [
   {
     title: "Explore",
     links: [
-      { name: "Home", href: "/" },
-      { name: "Features", href: "/features" },
-      { name: "How It Works", href: "/how-it-works" },
-      { name: "Testimonials", href: "/testimonials" },
+      { name: "Features", href: "/#features" },
+      { name: "How It Works", href: "/#how-it-works" },
+      { name: "Testimonials", href: "/#testimonials" },
       { name: "Blog", href: "/blog" },
     ],
   },
   {
     title: "Support",
     links: [
-      { name: "Help Center", href: "/help" },
       { name: "FAQs", href: "/faqs" },
-      { name: "Contact Us", href: "/contact" },
-      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Cookies", href: "/cookies" },
+      { name: "Privacy Policy", href: "/policy" },
       { name: "Terms of Service", href: "/terms" },
-    ],
-  },
-  {
-    title: "Community",
-    links: [
-      { name: "Join the Community", href: "/community" },
-      { name: "Success Stories", href: "/success-stories" },
-      { name: "Challenges", href: "/challenges" },
-      { name: "Forum", href: "/forum" },
-      { name: "Events", href: "/events" },
     ],
   },
 ];
@@ -134,7 +122,7 @@ export const Footer = () => {
             PULSE UP
           </motion.p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {navigationLinks.map((section) => (
             <FooterSection
               key={section.title}

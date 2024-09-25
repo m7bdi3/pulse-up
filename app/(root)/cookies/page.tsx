@@ -1,102 +1,161 @@
+"use client";
+import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
-export default function Page() {
+export default function CookiesPage() {
+  const [essentialCookies, setEssentialCookies] = React.useState(true);
+  const [analyticsCookies, setAnalyticsCookies] = React.useState(true);
+  const [marketingCookies, setMarketingCookies] = React.useState(false);
+
+  const handleSavePreferences = () => {
+    console.log("Saving preferences:", {
+      essentialCookies,
+      analyticsCookies,
+      marketingCookies,
+    });
+  };
+
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Cookies Policy
-          </h1>
-          <p className="mt-4 text-muted-foreground">
-            At our ecommerce shop, we use cookies to enhance your browsing
-            experience and provide you with personalized content. This Cookies
-            Policy explains what cookies are, the different types of cookies we
-            use, and how you can manage your cookie preferences.
-          </p>
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            What are Cookies?
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            Cookies are small text files that are stored on your device when you
-            visit a website. They help the website remember your actions and
-            preferences, such as your login details, shopping cart contents, and
-            other settings. Cookies are essential for the proper functioning of
-            many websites, including ours.
-          </p>
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            Types of Cookies We Use
-          </h2>
-          <div className="mt-4 space-y-4">
-            <div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Essential Cookies
-              </h3>
-              <p className="mt-2 text-muted-foreground">
-                These cookies are necessary for the website to function
-                properly. They enable you to navigate the site, use its
-                features, and access secure areas. Without these cookies, the
-                website would not work as intended.
-              </p>
+    <div className="container mx-auto px-4 py-12 md:py-24">
+      <h1 className="text-3xl font-bold mb-6">Cookie Policy</h1>
+      <p className="mb-4">
+        We use cookies to improve your experience on our site and to show you
+        relevant advertising. To find out more, read our{" "}
+        <Link href="/privacy-policy" className="text-blue-600 hover:underline">
+          privacy policy
+        </Link>
+        .
+      </p>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Cookie Preferences</CardTitle>
+          <CardDescription>Manage your cookie settings</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="essential-cookies">Essential Cookies</Label>
+                <p className="text-sm text-muted-foreground">
+                  These cookies are necessary for the website to function and
+                  cannot be switched off.
+                </p>
+              </div>
+              <Switch
+                id="essential-cookies"
+                checked={essentialCookies}
+                onCheckedChange={setEssentialCookies}
+                disabled
+              />
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Analytics Cookies
-              </h3>
-              <p className="mt-2 text-muted-foreground">
-                These cookies help us understand how visitors interact with our
-                website, such as which pages are visited most often and where
-                users are located. This information is used to improve the
-                website&apos;s performance and user experience.
-              </p>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="analytics-cookies">Analytics Cookies</Label>
+                <p className="text-sm text-muted-foreground">
+                  These cookies allow us to count visits and traffic sources so
+                  we can measure and improve the performance of our site.
+                </p>
+              </div>
+              <Switch
+                id="analytics-cookies"
+                checked={analyticsCookies}
+                onCheckedChange={setAnalyticsCookies}
+              />
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Marketing Cookies
-              </h3>
-              <p className="mt-2 text-muted-foreground">
-                These cookies are used to deliver advertisements that are more
-                relevant to you and your interests. They are also used to limit
-                the number of times you see an advertisement and to measure the
-                effectiveness of advertising campaigns.
-              </p>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="marketing-cookies">Marketing Cookies</Label>
+                <p className="text-sm text-muted-foreground">
+                  These cookies may be set through our site by our advertising
+                  partners to build a profile of your interests.
+                </p>
+              </div>
+              <Switch
+                id="marketing-cookies"
+                checked={marketingCookies}
+                onCheckedChange={setMarketingCookies}
+              />
             </div>
           </div>
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            Managing Your Cookie Preferences
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            You can manage your cookie preferences by adjusting your browser
-            settings. Most browsers allow you to accept or reject cookies, as
-            well as to delete existing cookies. However, please note that
-            disabling essential cookies may affect the functionality of our
-            website.
-          </p>
-          <div className="mt-4">
-            <Button variant="outline" size="sm">
-              Learn More
-            </Button>
-          </div>
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            Our Cookie Practices
-          </h2>
-          <p className="mt-4 text-muted-foreground">
-            We are committed to using cookies responsibly and transparently. We
-            will never use cookies to collect personal information without your
-            consent, and we will always strive to protect your privacy. If you
-            have any questions or concerns about our use of cookies, please
-            don&apos;t hesitate to contact us.
-          </p>
-        </div>
-      </div>
+        </CardContent>
+        <CardFooter>
+          <Button onClick={handleSavePreferences}>Save Preferences</Button>
+        </CardFooter>
+      </Card>
+
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="what-are-cookies">
+          <AccordionTrigger>What are cookies?</AccordionTrigger>
+          <AccordionContent>
+            Cookies are small text files that are placed on your computer or
+            mobile device when you browse websites. They allow the website to
+            recognize your device and remember if you&apos;ve been to the
+            website before.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="how-we-use-cookies">
+          <AccordionTrigger>How do we use cookies?</AccordionTrigger>
+          <AccordionContent>
+            We use cookies for a variety of reasons, such as keeping you signed
+            in, remembering your preferences, analyzing how you use our website,
+            and personalizing your experience.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="types-of-cookies">
+          <AccordionTrigger>Types of cookies we use</AccordionTrigger>
+          <AccordionContent>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                Essential cookies: Necessary for the website to function
+                properly.
+              </li>
+              <li>
+                Analytics cookies: Help us understand how visitors interact with
+                our website.
+              </li>
+              <li>
+                Marketing cookies: Used to track visitors across websites to
+                allow targeted advertising.
+              </li>
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="manage-cookies">
+          <AccordionTrigger>How to manage cookies</AccordionTrigger>
+          <AccordionContent>
+            You can manage your cookie preferences using the toggles above.
+            Additionally, most web browsers allow some control of cookies
+            through browser settings. To find out more about cookies, including
+            how to see what cookies have been set and how to manage and delete
+            them, visit{" "}
+            <a
+              href="https://www.aboutcookies.org"
+              className="text-blue-600 hover:underline"
+            >
+              www.aboutcookies.org
+            </a>
+            .
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }

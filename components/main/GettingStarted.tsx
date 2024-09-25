@@ -90,7 +90,10 @@ const StepCard: React.FC<StepCardProps> = ({
 
 export const GettingStarted: React.FC = () => {
   return (
-    <section className="py-16 md:py-24 bg-muted min-h-screen flex items-center justify-center">
+    <section
+      className="py-16 md:py-24 bg-muted min-h-screen flex items-center justify-center"
+      id="how-it-works"
+    >
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-12"

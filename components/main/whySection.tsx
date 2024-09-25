@@ -69,7 +69,7 @@ const FeatureCard = ({ title, description, icon: Icon }: any) => (
 
 export const WhyPulseUp = () => {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-16 md:py-24 bg-background" id="features">
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-12"
