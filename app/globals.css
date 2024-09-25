@@ -8,6 +8,19 @@ body,
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  overflow: auto;
+  /* Keep scrolling functionality */
+
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+/* Hide scrollbar for WebKit browsers */
+::-webkit-scrollbar {
+  display: none;
 }
 
 html.lenis,
