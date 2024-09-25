@@ -18,6 +18,7 @@ import {
   Progress,
   SessionType,
   Subscription,
+  SubscriptionStatus,
   User,
   UserRole,
   WorkoutPlan,
@@ -412,7 +413,19 @@ export type UserWithData = {
       exercises: {
         sessionId: string;
         exerciseId: string;
-        exercise: Exercise[];
+        exercise: {
+          id: string;
+          name: string;
+          description: string | null;
+          duration: number;
+          repetitions: number | null;
+          bodyPart: BodyPart;
+          caloriesBurned: number;
+          sets: number | null;
+          images: string[];
+          equipment: ExerciseEquipment[];
+          category: ExerciseCategory;
+        }[];
       }[];
     }[];
   } | null;
@@ -445,9 +458,31 @@ export type UserWithData = {
     }[];
   } | null;
   Subscription: Subscription | null;
-  Post: Post[];
-  Comment: Comment[];
-  LifeTimePayment: LifeTimePayment | null;
+  Post: {
+    id: string;
+    userId: string;
+    content: string;
+    images: string[];
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
+  Comment: {
+    id: string;
+    postId: string;
+    userId: string;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
+  LifeTimePayment: {
+    id: string;
+    userId: string;
+    planId: string;
+    price: number;
+    Status: SubscriptionStatus;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
   UserChallenge: {
     id: string;
     userId: string;
