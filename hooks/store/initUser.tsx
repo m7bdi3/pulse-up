@@ -66,11 +66,7 @@ export default function InitUser({
   return null;
 }
 
-export function InitAdminUsers({
-  users,
-}: {
-  users: UserWithData[] | undefined;
-}) {
+export function InitAdminUsers({ users }: { users: UserWithData[] | null }) {
   const initState = useRef(false);
   useEffect(() => {
     if (!initState.current && users) {

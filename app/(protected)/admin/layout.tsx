@@ -72,7 +72,7 @@ export default async function Adminlayout({
     <>
       <AdminPanelLayout isAdmin>{children}</AdminPanelLayout>
       <Toaster />
-      <InitAdminUsers users={users || undefined} />
+      <InitAdminUsers users={users || null} />
     </>
   );
 }

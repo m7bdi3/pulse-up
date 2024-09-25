@@ -37,7 +37,7 @@ export const ProgressCreateForm = () => {
   const [bodyFat, setBodyFat] = useState(0);
   const [muscleMass, setMuscleMass] = useState(0);
 
-  const { user, addNewProgress } = useUser();
+  const { user, addNewProgress, progress } = useUser();
 
   const form = useForm<z.infer<typeof ProgressSchema>>({
     resolver: zodResolver(ProgressSchema),
@@ -132,6 +132,7 @@ export const ProgressCreateForm = () => {
               type="number"
               step={0.1}
               {...field}
+              value={field.value || ""}
             />
           </FormControl>
           <FormMessage />
