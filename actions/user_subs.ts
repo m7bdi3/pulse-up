@@ -120,3 +120,44 @@ export const createStripeUrl = async (planId: string) => {
     return { data: stripeSession.url };
   }
 };
+
+export async function cancelSubscription() {
+  const session = await auth();
+  if (!session || !session.user) {
+    throw new Error("Not authenticated");
+  }
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    include: { Subscription: true },
+  });
+
+  if (!user || !user.Subscription) {
+    throw new Error("No active subscription found");
+  }
+
+  try {
+    // Cancel the subscription with Stripe
+    await stripe.subscriptions.cancel(user.Subscription.stripeSubscriptionId);
+
+    // Update the local database
+    await db.subscription.update({
+      where: { id: user.Subscription.id },
+      data: { status: "CANCELED" },
+    });
+
+    await db.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        isSubscribed: false,
+      },
+    });
+
+    return { success: true, message: "Subscription successfully canceled" };
+  } catch (error) {
+    console.error("Error canceling subscription:", error);
+    return { success: false, message: "Failed to cancel subscription" };
+  }
+}

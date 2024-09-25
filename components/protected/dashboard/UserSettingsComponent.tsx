@@ -37,6 +37,7 @@ import { Loader2, User, Settings, CreditCard } from "lucide-react";
 import { userSchema } from "../forms";
 import UpdateUserSettings from "@/actions/UserSettings";
 import { cn } from "@/lib/utils";
+import { cancelSubscription } from "@/actions/user_subs";
 
 interface TabButtonProps {
   value: string;
@@ -103,6 +104,18 @@ export const UserSettingComponent: React.FC = () => {
       toast.success("Profile updated successfully");
     } catch (error) {
       toast.error("Failed to update profile");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleSubscription = async () => {
+    setIsUpdating(true);
+    try {
+      await cancelSubscription();
+      toast.success("Subscription Canceled successfully");
+    } catch (error) {
+      toast.error("Failed to cancel subscription. Please try again.");
     } finally {
       setIsUpdating(false);
     }
@@ -411,7 +424,12 @@ export const UserSettingComponent: React.FC = () => {
                         </p>
                       </div>
                       {user?.isSubscribed ? (
-                        <Button variant="outline">Manage Subscription</Button>
+                        <Button
+                          variant="destructive"
+                          onClick={handleSubscription}
+                        >
+                          Cancel Subscription
+                        </Button>
                       ) : (
                         <Button>Upgrade to Premium</Button>
                       )}
