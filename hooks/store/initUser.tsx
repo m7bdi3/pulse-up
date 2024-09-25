@@ -13,6 +13,8 @@ import {
   useNutriotionPlansStore,
   useWorkoutPlansStore,
   useFoodsStore,
+  UserWithData,
+  useAdminStore,
 } from "@/hooks/store/user";
 import { Food, NutritionPlan, Progress, WorkoutPlan } from "@prisma/client";
 
@@ -60,6 +62,22 @@ export default function InitUser({
     workoutPlans,
     foods,
   ]);
+
+  return null;
+}
+
+export function InitAdminUsers({
+  users,
+}: {
+  users: UserWithData[] | undefined;
+}) {
+  const initState = useRef(false);
+  useEffect(() => {
+    if (!initState.current && users) {
+      useAdminStore.setState({ users });
+      initState.current = true;
+    }
+  }, [users]);
 
   return null;
 }

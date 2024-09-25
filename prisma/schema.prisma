@@ -58,7 +58,7 @@ model User {
   accounts            Account[]
   role                UserRole           @default(USER)
   progress            Progress[]
-  Subscription        Subscription[]
+  Subscription        Subscription?
   userNutritionPlanId String?            @unique
   userWorkoutPlanId   String?            @unique
   nutritionPlan       UserNutritionPlan?
@@ -68,7 +68,7 @@ model User {
   Like                Like[]
   UserChallenge       UserChallenge[]
   UserEvent           UserEvent[]
-  LifeTimePayment     LifeTimePayment[]
+  LifeTimePayment     LifeTimePayment?
 }
 
 model Progress {
@@ -109,7 +109,7 @@ model SubscriptionPlan {
 
 model Subscription {
   id                     String             @id @default(cuid())
-  userId                 String
+  userId                 String             @unique
   planId                 String
   stripeCustomerId       String             @unique
   stripeSubscriptionId   String             @unique
@@ -126,7 +126,7 @@ model Subscription {
 
 model LifeTimePayment {
   id        String             @id @default(cuid())
-  userId    String
+  userId    String             @unique
   planId    String
   price     Int
   Status    SubscriptionStatus

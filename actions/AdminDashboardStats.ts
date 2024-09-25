@@ -1,6 +1,8 @@
 "use server";
 
+import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { revalidatePath } from "next/cache";
 
 export const GetTotalRevenue = async () => {
   const paidOrders = await db.subscription.findMany();
@@ -75,3 +77,23 @@ export const getGraphRevenue = async () => {
 
   return graphData;
 };
+
+export async function DeleteUser(id: string) {
+  const session = await auth();
+  if (!session) {
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    await db.user.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath("/admin/user-management", "layout");
+    return { success: "User Deleted Successfully" };
+  } catch (error) {
+    console.error(error);
+    return { error: "Failed to delete user." };
+  }
+}

@@ -1,17 +1,24 @@
 import {
   activityLevel,
   BodyPart,
+  Comment,
   DifficultyLevel,
+  Exercise,
   ExerciseCategory,
   ExerciseEquipment,
   Food,
   FoodCategory,
   Gender,
   Goal,
+  LifeTimePayment,
+  Meal,
   MealType,
   NutritionPlan,
+  Post,
   Progress,
   SessionType,
+  Subscription,
+  User,
   UserRole,
   WorkoutPlan,
 } from "@prisma/client";
@@ -350,6 +357,124 @@ export const useFoodsStore = create(
   persist<FoodsStore>(
     () => ({
       foods: [],
+    }),
+    {
+      name: "Sessions-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
+
+export type UserWithData = {
+  id: string;
+  name: string | null;
+  email: string;
+  emailVerified: Date | null;
+  image: string | null;
+  phone: string | null;
+  address: string | null;
+  age: number | null;
+  gender: Gender;
+  height: number | null;
+  goal: Goal | null;
+  weight: number | null;
+  bmi: number | null;
+  bmr: number | null;
+  bodyFat: number | null;
+  muscleMass: number | null;
+  activityLevel: activityLevel | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isSubscribed: boolean;
+  role: UserRole;
+  workoutPlan: {
+    id: string;
+    userId: string;
+    workoutPlanId: string;
+    createdAt: Date;
+    updatedAt: Date;
+    workoutPlan: {
+      name: string;
+    };
+    sessions: {
+      id: string;
+      name: string;
+      day: number;
+      week: number;
+      type: SessionType;
+      duration: number;
+      completed: boolean;
+      caloriesBurned: number | null;
+      feedback: string[];
+      workoutPlanId: string;
+      createdAt: Date;
+      updatedAt: Date;
+      exercises: {
+        sessionId: string;
+        exerciseId: string;
+        exercise: Exercise[];
+      }[];
+    }[];
+  } | null;
+  nutritionPlan: {
+    id: string;
+    userId: string;
+    nutritionPlanId: string;
+    subscriptionDate: Date;
+    caloriesPerDay: number | null;
+    protein: number | null;
+    carbs: number | null;
+    fats: number | null;
+    nutritionPlan: {
+      name: string;
+    };
+    UserMealPlan: {
+      id: string;
+      day: number;
+      mealType: MealType;
+      mealId: string;
+      isCompleted: boolean;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+      userNutritionPlanId: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+      meal: Meal;
+    }[];
+  } | null;
+  Subscription: Subscription | null;
+  Post: Post[];
+  Comment: Comment[];
+  LifeTimePayment: LifeTimePayment | null;
+  UserChallenge: {
+    id: string;
+    userId: string;
+    challengeId: string;
+    challenge: {
+      name: string;
+    };
+  }[];
+  UserEvent: {
+    id: string;
+    userId: string;
+    eventId: string;
+    event: {
+      name: string;
+    };
+  }[];
+  progress: Progress[];
+};
+
+interface AdminUsers {
+  users: UserWithData[] | null;
+}
+
+export const useAdminStore = create(
+  persist<AdminUsers>(
+    () => ({
+      users: [],
     }),
     {
       name: "Sessions-storage",
