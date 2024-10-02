@@ -12,16 +12,16 @@ export default async function Dashboardlayout({
 }) {
   const session = await auth();
 
-  const subscription = await db.subscription.findFirst({
-    where: {
-      userId: session?.user.id,
-    },
-  });
+  // const subscription = await db.subscription.findFirst({
+  //   where: {
+  //     userId: session?.user.id,
+  //   },
+  // });
 
   if (!session) {
     return redirect("/login");
-  } else if (!subscription) {
-    return redirect("/subscription");
+    // } else if (!subscription) {
+    //   return redirect("/subscription");
   } else {
     return (
       <>

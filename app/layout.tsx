@@ -42,80 +42,92 @@ const userInfo = async () => {
 
   if (!session) return null;
 
-  const user = await db.user.findUnique({
-    where: {
-      id: session?.user.id,
-    },
-  });
-  const progress = await db.progress.findMany({
-    where: {
-      userId: session.user.id,
-    },
-    orderBy: {
-      date: "desc",
-    },
-  });
+  const [
+    user,
+    progress,
+    workoutPlan,
+    nutritionPlan,
+    nutritionPlans,
+    workoutPlans,
+    foods,
+  ] = await Promise.all([
+    db.user.findUnique({
+      where: {
+        id: session?.user.id,
+      },
+    }),
+    db.progress.findMany({
+      where: {
+        userId: session.user.id,
+      },
+      orderBy: {
+        date: "desc",
+      },
+    }),
+    db.userWorkoutPlan.findUnique({
+      where: {
+        userId: session.user.id,
+      },
+      include: {
+        workoutPlan: true,
+      },
+    }),
 
-  const workoutPlan = await db.userWorkoutPlan.findUnique({
-    where: {
-      userId: session.user.id,
-    },
-    include: {
-      workoutPlan: true,
-    },
-  });
-
-  const userSessions = await db.userSessions.findMany({
-    where: {
-      workoutPlanId: workoutPlan?.id!,
-    },
-    include: {
-      exercises: {
-        include: {
-          exercise: true,
+    db.userNutritionPlan.findUnique({
+      where: {
+        userId: session.user.id,
+      },
+      include: {
+        nutritionPlan: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            description: true,
+          },
         },
       },
-    },
-    orderBy: {
-      day: "asc",
-    },
-  });
+    }),
 
-  const nutritionPlan = await db.userNutritionPlan.findUnique({
-    where: {
-      userId: session.user.id,
-    },
-    include: {
-      nutritionPlan: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          description: true,
+    db.nutritionPlan.findMany(),
+    db.workoutPlan.findMany(),
+
+    db.food.findMany(),
+  ]);
+
+  const [userSessions, userMeals] = await Promise.all([
+    db.userSessions.findMany({
+      where: {
+        workoutPlanId: workoutPlan?.id!,
+      },
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+          },
         },
       },
-    },
-  });
-
-  const userMeals = await db.userMealPlan.findMany({
-    where: {
-      userNutritionPlanId: nutritionPlan?.id,
-    },
-    include: {
-      meal: {
-        include: {
-          foods: true,
+      orderBy: {
+        day: "asc",
+      },
+    }),
+    db.userMealPlan.findMany({
+      where: {
+        userNutritionPlanId: nutritionPlan?.id,
+      },
+      include: {
+        meal: {
+          include: {
+            foods: true,
+          },
         },
       },
-    },
-    orderBy: {
-      day: "asc",
-    },
-  });
+      orderBy: {
+        day: "asc",
+      },
+    }),
+  ]);
 
-  const nutritionPlans = await db.nutritionPlan.findMany();
-  const workoutPlans = await db.workoutPlan.findMany();
-  const foods = await db.food.findMany();
   return {
     user,
     progress,
